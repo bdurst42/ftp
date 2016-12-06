@@ -1,12 +1,12 @@
 #include "ftp.h"
 
-void		ftp_print_sock(char	*str, int fd)
+void		ftp_send(char	*str, int sock)
 {
 	t_header	header;
 
 	header.nb_bytes = ft_strlen(str);
-	ft_fputstr((char*)&header, fd);
-	ft_fputstr(str, fd);
+	send(sock, &header, sizeof(t_header), 0);
+	send(sock, str, header.nb_bytes, 0);
 }
 
 void		ftp_error(char *format_string, char *str)

@@ -22,7 +22,32 @@ void			ftp_get_server_package(int sock, t_header *header)
 	char		*buff;
 	ssize_t	ret;
 	
-	if ((ret = read(sock, header, sizeof(t_header))) > 0)
+	ft_putendl("package");
+		ft_putnbr(sock);
+		ft_putstr("\n");
+	if ((ret = recv(sock, header, sizeof(t_header), 0)) > 0)
+	{
+		ft_putnbr(ret);
+		ft_putstr("\n");
+		ft_putnbr(header->nb_bytes);
+		ft_putstr("\n");
+		if (!(buff = malloc(sizeof(char) * (header->nb_bytes + 1))))
+			ftp_error(NULL, "malloc failure\n");
+		if ((ret = recv(sock, buff, sizeof(header->nb_bytes), 0)) > 0)
+		{
+			buff[ret] = '\0';
+			if (ret == -1)
+				ftp_error(NULL, "read failure\n");
+			else
+			{
+				write(1, buff, sizeof(buff));
+			}
+		}
+		free(buff);
+	}
+	else if (ret == -1)
+		ftp_error(NULL, "read failure\n");
+	/*if ((ret = read(sock, header, sizeof(t_header))) > 0)
 	{
 		ft_putnbr(ret);
 		ft_putstr("\n");
@@ -43,7 +68,7 @@ void			ftp_get_server_package(int sock, t_header *header)
 		free(buff);
 	}
 	else if (ret == -1)
-		ftp_error(NULL, "read failure\n");
+		ftp_error(NULL, "read failure\n");*/
 }
 
 void			ftp_is_cmd(char *cmd)
@@ -69,6 +94,7 @@ void			ftp_get_stdin(void)
 	ssize_t	ret;
 	char		*line;
 
+	ft_putendl("gnl");
 	if ((ret = gnl(0, &line) > 0))
 	{
 		ft_putendl(line);

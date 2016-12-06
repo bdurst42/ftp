@@ -24,10 +24,10 @@ void		ftp_fork(int c_sock)
 	pid_t	pid;
 
 	if ((pid = fork()) == -1)
-		ftp_print_sock("ERROR: fork failure !\n", c_sock);
+		ftp_send("ERROR: fork failure !\n", c_sock);
 	else if (pid)
 	{
-		ftp_print_sock("SUCCES\n", c_sock);
+		ftp_send("SUCCES\n", c_sock);
 	}
 }
 

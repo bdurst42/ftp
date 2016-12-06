@@ -6,6 +6,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <stdio.h>
+#include <sys/socket.h>
 #include "../libft/libft.h"
 
 typedef struct	s_header
@@ -14,6 +15,6 @@ typedef struct	s_header
 }				t_header;
 
 void		ftp_error(char *format_string, char *str);
-void		ftp_print_sock(char *str, int fd);
+void		ftp_send(char *str, int sock);
 
 #endif
