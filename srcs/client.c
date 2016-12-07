@@ -29,11 +29,24 @@ char		*ftp_get_stdin(void)
 	return (NULL);
 }
 
+void		ftp_parse_cmd(char *cmd, int sock)
+{
+	ft_putendl(cmd + 4);
+	if (!ft_strncmp(cmd, "put ", 4))
+	{
+		ftp_send_file(cmd, sock);
+		ft_putendl("puttttttttttt");
+	}
+	else
+		ftp_send_package(cmd, sock, 0);
+}
+
 int			main(int ac, char *av[])
 {
 	int					port;
 	int					sock;
 	char				*buff;
+	t_header			header;
 
 	if (ac != 3)
 		ftp_error("Usage: s% <addr> <port>\n", av[0]);
@@ -42,19 +55,19 @@ int			main(int ac, char *av[])
 	sock = ftp_create_client(av[1], port);
 	while (1)
 	{
-		buff = ftp_get_package(sock);
+		buff = ftp_get_package(sock, &header);
 		if (buff)
 		{
 			if (!ft_strcmp(buff, "quit"))
 			{
 				close(sock);
-				exit(0);
+				return (0);
 			}
 			else
 				ft_putendl(buff);
 		}
-			if ((buff = ftp_get_stdin()))
-			ftp_send_package(buff, sock);
+		if ((buff = ftp_get_stdin()))
+			ftp_parse_cmd(buff, sock);
 	}
 	close(sock);
 	return (0);
