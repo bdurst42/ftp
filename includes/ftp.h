@@ -15,6 +15,7 @@ typedef struct	s_header
 }				t_header;
 
 void		ftp_error(char *format_string, char *str);
-void		ftp_send(char *str, int sock);
+void		ftp_send_package(char *str, int sock);
+char		*ftp_get_package(int sock);
 
 #endif
