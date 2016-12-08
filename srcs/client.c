@@ -33,19 +33,33 @@ void		ftp_parse_cmd(char *cmd, int sock)
 {
 	ft_putendl(cmd + 4);
 	if (!ft_strncmp(cmd, "put ", 4))
-	{
 		ftp_send_file(cmd, sock);
-		ft_putendl("puttttttttttt");
-	}
 	else
 		ftp_send_package(cmd, sock, 0);
+}
+
+char		ftp_ret_cmd(char *cmd, int sock)
+{
+	if (!ft_strcmp(cmd, "quit"))
+	{
+		close(sock);
+		return (0);
+	}
+	else if (!ft_strncmp(cmd, "get ", 4))
+	{
+		ft_putendl("GETTTTTTTTTTTTTTTTTTT");
+		ftp_get_file(ft_strtrim(cmd + 4), sock);
+	}
+	else
+		ft_putendl(cmd);
+	return (1);
 }
 
 int			main(int ac, char *av[])
 {
 	int					port;
 	int					sock;
-	char				*buff;
+	char				*cmd;
 	t_header			header;
 
 	if (ac != 3)
@@ -55,19 +69,11 @@ int			main(int ac, char *av[])
 	sock = ftp_create_client(av[1], port);
 	while (1)
 	{
-		buff = ftp_get_package(sock, &header);
-		if (buff)
-		{
-			if (!ft_strcmp(buff, "quit"))
-			{
-				close(sock);
+		if ((cmd = ftp_get_package(sock, &header)))
+			if (!(ftp_ret_cmd(cmd, sock)))
 				return (0);
-			}
-			else
-				ft_putendl(buff);
-		}
-		if ((buff = ftp_get_stdin()))
-			ftp_parse_cmd(buff, sock);
+		if ((cmd = ftp_get_stdin()))
+			ftp_parse_cmd(cmd, sock);
 	}
 	close(sock);
 	return (0);

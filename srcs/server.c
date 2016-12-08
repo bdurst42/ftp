@@ -52,8 +52,8 @@ char            ftp_is_cmd(char *cmd, int c_sock)
 		ftp_send_package("SUCCES: cd", c_sock, 0);
 	else if (!ft_strncmp(cmd, "get ", 4))
 	{
+		ftp_send_file(cmd, c_sock);
 		ftp_send_package("SUCCES: get", c_sock, 0);
-		ftp_get_file(ft_strtrim(cmd + 4), c_sock);
 	}
 	else if (!ft_strncmp(cmd, "put ", 4))
 	{

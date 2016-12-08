@@ -36,7 +36,7 @@ void            ftp_get_file(char *cmd, int sock)
 	int			fd;
 
 	ft_putendl(cmd);
-	if ((fd = open(cmd, O_RDWR | O_CREAT, 0777)) == -1)
+	if ((fd = open(cmd, O_WRONLY | O_CREAT | O_TRUNC, 0777)) == -1)
 		ftp_error(NULL, "open failure\n");
 	header.flag |= F_CONTINUE;
 	while (header.flag & F_CONTINUE)
