@@ -96,21 +96,45 @@ void			ftp_cd(char *path, int c_sock)
 		ftp_send_package("cd failure", c_sock, 0);
 }
 
-char            ftp_is_cmd(char *cmd, int c_sock, char *path)
+char			**ftp_deal_ls_paths(char **args)
+{
+	return (0);
+}
+
+void			ftp_ls(char *cmd, int c_sock, char *path)
 {
 	char	**args;
-
-	path = getcwd(NULL, 0);
+	pid_t	father;
+	int		fd;
+	
+	(void)path;
 	args = ft_strsplit(cmd, ' ');
-	ft_putendl(cmd);
+	if ((fd = open(FILE_BUFFER, O_RDWR | O_CREAT | O_TRUNC, 0777)) == -1)
+	{
+		ftp_send_package("Error: open tmp file fail !", c_sock, 0);
+		return ;
+	}
+	if ((father = fork()) != 0)
+	{
+		dup2(fd, 1);
+	//	args = ftp_deal_ls_paths(args);
+		if (execv("/bin/ls", args) == -1)
+			ftp_error("NULL", "execve failure\n");
+		//TO DO Multiple file
+		ftp_send_file("ls", args[1], c_sock, 0);
+	}
+	else
+		wait4(father, 0, 0, 0);
+	close(fd);
+}
+
+char            ftp_is_cmd(char *cmd, int c_sock, char *path)
+{
+
 	if (!ft_strcmp(cmd, "pwd"))
 		ftp_send_package(getcwd(NULL, 0), c_sock, 0);
 	else if (!ft_strncmp(cmd, "ls", 2))
-	{
-		//dup2(c_sock, 1);
-		if (execv("/bin/ls", args) == -1)
-			ftp_error("NULL", "execve failure\n");
-	}
+		ftp_ls(cmd, c_sock, path);
 	else if (!ft_strncmp(cmd, "cd ", 3))
 	{
 		ftp_cd(ftp_check_path(path, ft_strtrim(cmd + 3)), c_sock);
@@ -118,7 +142,7 @@ char            ftp_is_cmd(char *cmd, int c_sock, char *path)
 	}
 	else if (!ft_strncmp(cmd, "get ", 4))
 	{
-		ftp_send_file(cmd, c_sock);
+		ftp_send_file(cmd, ft_strtrim(cmd + 4), c_sock, 1);
 		ftp_send_package("SUCCES: get", c_sock, 0);
 	}
 	else if (!ft_strncmp(cmd, "put ", 4))

@@ -33,7 +33,7 @@ void		ftp_parse_cmd(char *cmd, int sock)
 {
 	ft_putendl(cmd + 4);
 	if (!ft_strncmp(cmd, "put ", 4))
-		ftp_send_file(cmd, sock);
+		ftp_send_file(cmd, ft_strtrim(cmd + 4), sock, 1);
 	else
 		ftp_send_package(cmd, sock, 0);
 }
@@ -45,6 +45,8 @@ char		ftp_ret_cmd(char *cmd, int sock)
 		close(sock);
 		return (0);
 	}
+	else if (!ft_strcmp(cmd, "ls"))
+		ftp_get_file(NULL, sock);
 	else if (!ft_strncmp(cmd, "get ", 4))
 	{
 		ft_putendl("GETTTTTTTTTTTTTTTTTTT");
