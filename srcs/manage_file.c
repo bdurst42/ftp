@@ -23,8 +23,8 @@ void		ftp_send_file(char *cmd, char *file, int sock, char flag)
 			ftp_error(NULL, "read failure\n");
 		else
 			ftp_send_package("", sock, 0);
+		close(fd);
 	}
-	close(fd);
 }
 
 void            ftp_get_file(char *file, int sock)
@@ -40,21 +40,26 @@ void            ftp_get_file(char *file, int sock)
 	while (header.flag & F_CONTINUE)
 	{
 		buff = ftp_get_package(sock, &header);
-		ft_putstr("size = ");
-		ft_putnbr(header.nb_bytes);
-		if (header.flag & F_CREATE_FILE)
+		if (buff)
 		{
-			ft_putstr(" strlen = ");
-			ft_putnbr(ft_strlen(buff));
-			ft_putendl("");
-			ft_putendl("get ============================================================");
-			ft_putstr(buff);
-			if ((write(fd, buff, header.nb_bytes)) == -1)
-				ftp_error(NULL, "write failure\n");
+			/*ft_putstr("size = ");
+			ft_putnbr(header.nb_bytes);
+			ft_putstr("\n");
+			*/
+			if (header.flag & F_CREATE_FILE)
+			{
+				ft_putstr(" strlen = ");
+				ft_putnbr(ft_strlen(buff));
+				ft_putendl("");
+				ft_putendl("get ============================================================");
+				ft_putstr(buff);
+				if ((write(fd, buff, header.nb_bytes)) == -1)
+					ftp_error(NULL, "write failure\n");
+			}
+			else
+				ft_putstr(buff);
 		}
-		else
-			ft_putstr(buff);
-		ft_putendl("");
 	}
-	close(fd);
+	if (file)
+		close(fd);
 }

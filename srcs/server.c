@@ -106,26 +106,34 @@ void			ftp_ls(char *cmd, int c_sock, char *path)
 	char	**args;
 	pid_t	father;
 	int		fd;
+	int		stat_loc;
+	char	bu[MAX_PACKAGE_SIZE + 1];
+	int ret;
 	
 	(void)path;
 	args = ft_strsplit(cmd, ' ');
-	if ((fd = open(FILE_BUFFER, O_RDWR | O_CREAT | O_TRUNC, 0777)) == -1)
+	if ((fd = open(FILE_BUFFER, O_RDWR | O_CREAT | O_TRUNC, 0777)) == -1)	
 	{
-		ftp_send_package("Error: open tmp file fail !", c_sock, 0);
+		ftp_send_package("Error: create tmp file fail !", c_sock, 0);
 		return ;
 	}
-	if ((father = fork()) != 0)
+	if ((father = fork()) == 0)
 	{
-		dup2(fd, 1);
+		if (dup2(fd, 1) < 0)
+			ftp_error("NULL", "dup2 failure\n");
 	//	args = ftp_deal_ls_paths(args);
 		if (execv("/bin/ls", args) == -1)
-			ftp_error("NULL", "execve failure\n");
-		//TO DO Multiple file
-		ftp_send_file("ls", args[1], c_sock, 0);
+			ftp_error("NULL", "execv failure\n");
 	}
 	else
-		wait4(father, 0, 0, 0);
-	close(fd);
+	{
+		wait4(0, &stat_loc, 0, 0);
+		close(fd);
+		if ((WIFEXITED(stat_loc) && WEXITSTATUS(stat_loc) != 0) || WIFSIGNALED(stat_loc))
+			ftp_error(NULL, "ls function fail");
+		//TO DO Multiple file
+		ftp_send_file("ls", FILE_BUFFER, c_sock, 0);
+	}
 }
 
 char            ftp_is_cmd(char *cmd, int c_sock, char *path)
@@ -170,7 +178,7 @@ void		ftp_fork(int c_sock)
 	path = getcwd(NULL, 0);
 	if ((pid = fork()) == -1)
 		ftp_send_package("ERROR: fork failure !", c_sock, 0);
-	else if (pid)
+	else if (pid == 0)
 	{
 		ftp_send_package("SUCCES: connection", c_sock, 0);
 		while (ftp_is_cmd(ftp_get_package(c_sock, &header), c_sock, path))

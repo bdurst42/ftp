@@ -9,6 +9,7 @@
 # include <sys/socket.h>
 # include <fcntl.h>
 # include "../libft/libft.h"
+# include <sys/stat.h>
 
 # define F_CREATE_FILE	(1 << 0)
 # define F_CONTINUE (1 << 1)
