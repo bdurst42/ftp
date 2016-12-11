@@ -1,29 +1,34 @@
 #include "ftp.h"
 
-void		ftp_send_file(char *cmd, char *file, int sock, char flag)
+void		ftp_send_files(char *cmd, char **file, int sock, char flag)
 {
-	int		fd;
-	char	buff[MAX_PACKAGE_SIZE + 1];
-	ssize_t	ret;
+	int			fd;
+	uint32_t	i;
+	char		buff[MAX_PACKAGE_SIZE + 1];
+	ssize_t		ret;
 
-	if ((fd = open(file, O_RDONLY)) == -1)
-		ftp_error(NULL, "open failure\n");
-	else
+	i = 0;
+	while (file[i])
 	{
-		ftp_send_package(cmd, sock, 0);
-		while ((ret = read(fd, buff, MAX_PACKAGE_SIZE)) > 0)
-		{
-			buff[ret] = '\0';
-			ft_putendl("send ============================================================");
-			ft_putendl(buff);
-			flag |= F_CONTINUE;
-			ftp_send_package(buff, sock, flag);
-		}
-		if (ret == -1)
-			ftp_error(NULL, "read failure\n");
+		if ((fd = open(file[i++], O_RDONLY)) == -1)
+			ftp_error(NULL, "open failure\n");
 		else
-			ftp_send_package("", sock, 0);
-		close(fd);
+		{
+			ftp_send_package(cmd, sock, 0);
+			while ((ret = read(fd, buff, MAX_PACKAGE_SIZE)) > 0)
+			{
+				buff[ret] = '\0';
+				ft_putendl("send ============================================================");
+				ft_putendl(buff);
+				flag |= F_CONTINUE;
+				ftp_send_package(buff, sock, flag);
+			}
+			if (ret == -1)
+				ftp_error(NULL, "read failure\n");
+			else
+				ftp_send_package("", sock, 0);
+			close(fd);
+		}
 	}
 }
 

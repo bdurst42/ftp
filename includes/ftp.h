@@ -26,7 +26,9 @@ typedef struct	s_header
 void			ftp_error(char *format_string, char *str);
 void			ftp_send_package(char *str, int sock, char flag);
 char			*ftp_get_package(int sock, t_header *header);
-void			ftp_get_file(char *cmd, int sock);
-void			ftp_send_file(char *cmd, char *file, int sock, char flag);
+void			ftp_get_file(char *file, int sock);
+void			ftp_send_files(char *cmd, char **file, int sock, char flag);
+char			**ftp_get_args(char **args, char *opt, char *path);
+char			*ftp_check_path(char *old_path, char *path);
 
 #endif

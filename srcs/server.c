@@ -29,67 +29,6 @@ int				ftp_find_last_directory(char *path)
 	return (i);
 }
 
-char			*ftp_check_path(char *old_path, char *path)
-{
-	int			i;
-	int			j;
-	int			pos;
-	char		*current_path;
-
-//	ft_putstr("getcwd = ");
-//	ft_putendl(getcwd(NULL, 0));
-//	ft_putstr("old_path = ");
-//	ft_putendl(old_path);
-//	ft_putstr("ft_strstr = ");
-//	ft_putendl(ft_strstr(getcwd(NULL, 0), old_path));
-	current_path = ft_strstr(getcwd(NULL, 0), old_path) + ft_strlen(old_path);
-//	ft_putstr("current_path = ");
-//	ft_putendl(current_path);
-//	if (!ft_strcmp(current_path, ""))
-//		current_path = "/";
-//	ft_putstr("path = ");
-//	ft_putendl(path);
-	if (path && path[0] != '/')
-		path = ft_strjoin("/", path);
-//	ft_putstr("path = ");
-//	ft_putendl(path);
-	i = -1;
-	while (path[++i])
-	{
-		if (path[i] == '/')
-			continue ;
-		j = i;
-//		ft_putstr("i = ");
-//		ft_putnbr(i);
-//		ft_putstr(" || j = ");
-//		ft_putnbr(j);
-//		ft_putstr("\n");
-		if (path[j] && path[j++] != '.')
-		{
-			while (path[j] && path[j] != '/')
-				++j;
-//			ft_putstr("directory i = ");
-//			ft_putnbr(i);
-//			ft_putstr(" || j = ");
-//			ft_putnbr(j);
-//			ft_putstr("\n");
-//			ft_putendl(ft_strsub(path, i, j - i));
-			current_path = ft_strjoin(current_path, ft_strsub(path, i - 1, j - i + 1));
-		}
-		else
-		{
-			while (path[j] == '.')
-				if (j++ != i)
-					if ((pos = ftp_find_last_directory(current_path)))
-						current_path = ft_strsub(current_path, 0, pos);
-		}
-		i = j;
-	}
-	current_path = ft_strjoin(old_path, current_path);
-//	ft_putendl(current_path);
-	return (current_path);
-}
-
 void			ftp_cd(char *path, int c_sock)
 {
 	if ((chdir(path)) == -1)
@@ -103,15 +42,14 @@ char			**ftp_deal_ls_paths(char **args)
 
 void			ftp_ls(char **args, int c_sock, char *path)
 {
-	char	**args;
 	pid_t	father;
 	int		fd;
 	int		stat_loc;
-	char	bu[MAX_PACKAGE_SIZE + 1];
-	int ret;
+	char	*file;
 	
 	(void)path;
-	if ((fd = open(FILE_BUFFER, O_RDWR | O_CREAT | O_TRUNC, 0777)) == -1)	
+	file = FILE_BUFFER;
+	if ((fd = open(file, O_RDWR | O_CREAT | O_TRUNC, 0777)) == -1)	
 	{
 		ftp_send_package("Error: create tmp file fail !", c_sock, 0);
 		return ;
@@ -131,33 +69,21 @@ void			ftp_ls(char **args, int c_sock, char *path)
 		if ((WIFEXITED(stat_loc) && WEXITSTATUS(stat_loc) != 0) || WIFSIGNALED(stat_loc))
 			ftp_error(NULL, "ls function fail");
 		//TO DO Multiple file
-		ftp_send_file("ls", FILE_BUFFER, c_sock, 0);
-	}
-}
-
-char				**ft_get_arg(char **args, char opt, char *path)
-{
-	int	i;
-
-	i = -1;
-	while (args[++i])
-	{
-		if (i && (!opt || args[i][0] != '-'))
-			args[i] = ftp_check_path(ft_strtrim(args[i]));
-		else
-			args[i] = ft_strtrim(args[i]);
+		ftp_send_files("ls", &file, c_sock, 0);
 	}
 }
 
 char            ftp_is_cmd(char *cmd, int c_sock, char *path)
 {
-	char	**args;
+	char		**args;
+	uint32_t	i;
 
+	i = 0;
 	if (!ft_strcmp(cmd, "pwd"))
 		ftp_send_package(getcwd(NULL, 0), c_sock, 0);
 	else if (!ft_strncmp(cmd, "ls", 2))
 	{
-		args = ft_get_arg(ft_strsplit(cmd, ' '), 1,path);
+		args = ftp_get_args(ft_strsplit(cmd, ' '), 1, path);
 		ftp_ls(args, c_sock, path);
 	}
 	else if (!ft_strncmp(cmd, "cd ", 3))
@@ -167,14 +93,16 @@ char            ftp_is_cmd(char *cmd, int c_sock, char *path)
 	}
 	else if (!ft_strncmp(cmd, "get ", 4))
 	{
-		args = ft_get_arg(ft_strsplit(cmd, ' '), 0,path);
-		ftp_send_file(args, ft_strtrim(cmd + 4), c_sock, 1);
+		args = ftp_get_args(ft_strsplit(cmd, ' '), 0, path);
+		ftp_send_files(cmd, args + 1, c_sock, 1);
 		ftp_send_package("SUCCES: get", c_sock, 0);
 	}
 	else if (!ft_strncmp(cmd, "put ", 4))
 	{
-		args = ft_get_arg(ft_strsplit(cmd, ' '), 0,path);
-		ftp_get_file(args, c_sock);
+		args = ftp_get_args(ft_strsplit(cmd, ' '), 0, path);
+		i = 1;
+		while (args[i])
+			ftp_get_file(args[i++], c_sock);
 		ftp_send_package("SUCCES: put", c_sock, 0);
 	}
 	else if (!ft_strcmp(cmd, "quit"))
