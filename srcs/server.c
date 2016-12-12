@@ -23,6 +23,8 @@ void			ftp_cd(char *path, int c_sock)
 {
 	if ((chdir(path)) == -1)
 		ftp_send_package("cd failure", c_sock, 0);
+	else
+		ftp_send_package("SUCCES: cd", c_sock, 0);
 }
 
 void			ftp_ls(char **args, int c_sock)
@@ -50,8 +52,6 @@ void			ftp_ls(char **args, int c_sock)
 	{
 		wait4(0, &stat_loc, 0, 0);
 		close(fd);
-		if ((WIFEXITED(stat_loc) && WEXITSTATUS(stat_loc) != 0) || WIFSIGNALED(stat_loc))
-			ftp_error(NULL, "ls function fail");
 		ftp_send_files("ls", file, c_sock, 0);
 	}
 }
@@ -61,6 +61,7 @@ char            ftp_is_cmd(char *cmd, int c_sock, char *path)
 	char		**args;
 	uint32_t	i;
 
+//	ft_putendl("IS CMMDDDDDDDDDDDDDDDDDDD");
 	i = 0;
 	if (!ft_strcmp(cmd, "pwd"))
 		ftp_send_package(getcwd(NULL, 0), c_sock, 0);
@@ -72,13 +73,11 @@ char            ftp_is_cmd(char *cmd, int c_sock, char *path)
 	else if (!ft_strncmp(cmd, "cd ", 3))
 	{
 		ftp_cd(ftp_check_path(path, ft_strtrim(cmd + 3)), c_sock);
-		ftp_send_package("SUCCES: cd", c_sock, 0);
 	}
 	else if (!ft_strncmp(cmd, "get ", 4))
 	{
 		args = ftp_get_args(ft_strsplit(cmd, ' '), 0, path);
 		ftp_send_files(cmd, args + 1, c_sock, 1);
-		ftp_send_package("SUCCES: get", c_sock, 0);
 	}
 	else if (!ft_strncmp(cmd, "put ", 4))
 	{
@@ -86,12 +85,11 @@ char            ftp_is_cmd(char *cmd, int c_sock, char *path)
 		i = 1;
 		while (args[i])
 		{
-			ft_putstr("||||||||||||||||||| ");
-			ft_putstr(args[i]);
-			ft_putendl(" |||||||||||||||||||");
+//			ft_putstr("||||||||||||||||||| ");
+//			ft_putstr(args[i]);
+//			ft_putendl(" |||||||||||||||||||");
 			ftp_get_file(args[i++], c_sock);
 		}
-		ftp_send_package("SUCCES: put", c_sock, 0);
 	}
 	else if (!ft_strcmp(cmd, "quit"))
 	{

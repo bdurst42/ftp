@@ -5,13 +5,15 @@ static int	ftp_create_client(char *addr, int port)
 	int					sock;
 	struct protoent		*proto;
 	struct sockaddr_in	sin;
+	struct hostent		*host;
 
 	if (!(proto = getprotobyname("tcp")))
 		ftp_error(NULL, "getprotobyname failure !\n");
+	host = gethostbyname(addr);
 	sock = socket(PF_INET, SOCK_STREAM, proto->p_proto);
 	sin.sin_family = AF_INET;
 	sin.sin_port = htons(port);
-	sin.sin_addr.s_addr = inet_addr(addr);
+	sin.sin_addr.s_addr = *(unsigned int *)host->h_addr;
 	if ((connect(sock, (const struct sockaddr*)&sin, sizeof(struct sockaddr_in))) == -1)
 		ftp_error(NULL, "connect failure !\n");
 	return (sock);	
@@ -22,6 +24,7 @@ char		*ftp_get_stdin(void)
 	ssize_t		ret;
 	char		*line;
 
+	ft_putstr("\033[0;34mftp\033[0m \033[0;32m->\033[0m ");
 	if ((ret = gnl(0, &line) > 0))
 		return (ft_strtrim(line));
 	else if (ret == -1)

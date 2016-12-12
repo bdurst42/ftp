@@ -11,7 +11,12 @@ char            *ftp_get_package(int sock, t_header *header)
 			ftp_error(NULL, "malloc failure\n");
 		if ((ret = recv(sock, buff, header->nb_bytes, 0)) > 0)
 		{
-			buff[ret] = '\0';
+/*			ft_putstr("get buff = ");
+			ft_putendl(buff);
+			ft_putstr("size = ");
+			ft_putnbr(header->nb_bytes);
+			ft_putstr("\n");
+*/			buff[ret] = '\0';
 			return (buff);
 		}
 	}
@@ -26,7 +31,12 @@ void		ftp_send_package(char *str, int sock, char flag)
 
 	header.nb_bytes = ft_strlen(str);
 	header.flag = flag;
-	if ((send(sock, &header, sizeof(t_header), 0)) == -1)
+/*	ft_putstr("send str = ");
+	ft_putendl(str);
+	ft_putstr("size = ");
+	ft_putnbr(header.nb_bytes);
+	ft_putstr("\n");
+*/	if ((send(sock, &header, sizeof(t_header), 0)) == -1)
 		ftp_error(NULL, "send failure\n");
 	if ((send(sock, str, header.nb_bytes, 0)) == -1)
 		ftp_error(NULL, "send failure\n");
