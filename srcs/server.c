@@ -19,37 +19,22 @@ static int	ftp_create_server(int port)
 	return (sock);	
 }
 
-int				ftp_find_last_directory(char *path)
-{
-	int	i;
-
-	i = ft_strlen(path);
-	while (i > 0 && path[i] != '/')
-		--i;
-	return (i);
-}
-
 void			ftp_cd(char *path, int c_sock)
 {
 	if ((chdir(path)) == -1)
 		ftp_send_package("cd failure", c_sock, 0);
 }
 
-char			**ftp_deal_ls_paths(char **args)
-{
-	return (0);
-}
-
-void			ftp_ls(char **args, int c_sock, char *path)
+void			ftp_ls(char **args, int c_sock)
 {
 	pid_t	father;
 	int		fd;
 	int		stat_loc;
-	char	*file;
+	char	*file[2];
 	
-	(void)path;
-	file = FILE_BUFFER;
-	if ((fd = open(file, O_RDWR | O_CREAT | O_TRUNC, 0777)) == -1)	
+	file[0] = FILE_BUFFER;
+	file[1] = NULL;
+	if ((fd = open(file[0], O_RDWR | O_CREAT | O_TRUNC, 0777)) == -1)	
 	{
 		ftp_send_package("Error: create tmp file fail !", c_sock, 0);
 		return ;
@@ -58,7 +43,6 @@ void			ftp_ls(char **args, int c_sock, char *path)
 	{
 		if (dup2(fd, 1) < 0)
 			ftp_error("NULL", "dup2 failure\n");
-	//	args = ftp_deal_ls_paths(args);
 		if (execv("/bin/ls", args) == -1)
 			ftp_error("NULL", "execv failure\n");
 	}
@@ -68,8 +52,7 @@ void			ftp_ls(char **args, int c_sock, char *path)
 		close(fd);
 		if ((WIFEXITED(stat_loc) && WEXITSTATUS(stat_loc) != 0) || WIFSIGNALED(stat_loc))
 			ftp_error(NULL, "ls function fail");
-		//TO DO Multiple file
-		ftp_send_files("ls", &file, c_sock, 0);
+		ftp_send_files("ls", file, c_sock, 0);
 	}
 }
 
@@ -84,7 +67,7 @@ char            ftp_is_cmd(char *cmd, int c_sock, char *path)
 	else if (!ft_strncmp(cmd, "ls", 2))
 	{
 		args = ftp_get_args(ft_strsplit(cmd, ' '), 1, path);
-		ftp_ls(args, c_sock, path);
+		ftp_ls(args, c_sock);
 	}
 	else if (!ft_strncmp(cmd, "cd ", 3))
 	{
@@ -99,10 +82,15 @@ char            ftp_is_cmd(char *cmd, int c_sock, char *path)
 	}
 	else if (!ft_strncmp(cmd, "put ", 4))
 	{
-		args = ftp_get_args(ft_strsplit(cmd, ' '), 0, path);
+		args = ftp_get_args(ft_strsplit(cmd, ' '), 0, NULL);
 		i = 1;
 		while (args[i])
+		{
+			ft_putstr("||||||||||||||||||| ");
+			ft_putstr(args[i]);
+			ft_putendl(" |||||||||||||||||||");
 			ftp_get_file(args[i++], c_sock);
+		}
 		ftp_send_package("SUCCES: put", c_sock, 0);
 	}
 	else if (!ft_strcmp(cmd, "quit"))

@@ -29,13 +29,13 @@ char		*ftp_get_stdin(void)
 	return (NULL);
 }
 
-void		ftp_parse_cmd(char *cmd, int sock, char *path)
+void		ftp_parse_cmd(char *cmd, int sock)
 {
 	char	**args;
 
 	if (!ft_strncmp(cmd, "put ", 4))
 	{
-		args = ftp_get_args(ft_strsplit(cmd, ' '), 0, path);
+		args = ftp_get_args(ft_strsplit(cmd, ' '), 0, NULL);
 		ftp_send_files(cmd, args + 1, sock, 1);
 	}
 	else
@@ -44,6 +44,9 @@ void		ftp_parse_cmd(char *cmd, int sock, char *path)
 
 char		ftp_ret_cmd(char *cmd, int sock)
 {
+	char	**args;
+	int		i;
+
 	if (!ft_strcmp(cmd, "quit"))
 	{
 		close(sock);
@@ -52,7 +55,12 @@ char		ftp_ret_cmd(char *cmd, int sock)
 	else if (!ft_strcmp(cmd, "ls"))
 		ftp_get_file(NULL, sock);
 	else if (!ft_strncmp(cmd, "get ", 4))
-		ftp_get_file(ft_strtrim(cmd + 4), sock);
+	{
+		i = 1;
+		args = ftp_get_args(ft_strsplit(cmd, ' '), 0, NULL);
+		while (args[i])
+			ftp_get_file(args[i++], sock);
+	}
 	else
 		ft_putendl(cmd);
 	return (1);
@@ -64,22 +72,19 @@ int			main(int ac, char *av[])
 	int					sock;
 	char				*cmd;
 	t_header			header;
-	char				*path;
 
 	if (ac != 3)
 		ftp_error("Usage: %s <addr> <port>\n", av[0]);
 	if (!(port = ft_atoi(av[2])) && av[1][0] != '0')
 		ftp_error(NULL, "Invalid port !\n");
 	sock = ftp_create_client(av[1], port);
-	ftp_send_package("pwd", sock, 0);
-	path = ftp_get_package(sock, &header);
 	while (1)
 	{
 		if ((cmd = ftp_get_package(sock, &header)))
 			if (!(ftp_ret_cmd(cmd, sock)))
 				return (0);
 		if ((cmd = ftp_get_stdin()))
-			ftp_parse_cmd(cmd, sock, path);
+			ftp_parse_cmd(cmd, sock);
 	}
 	close(sock);
 	return (0);

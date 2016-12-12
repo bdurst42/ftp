@@ -1,4 +1,6 @@
-NAME = ft_p
+NAME1 = server
+
+NAME2 = client
 
 CC = gcc
 
@@ -10,30 +12,45 @@ INCLUDE_DIR = ./includes
 
 DIR_OBJ = ./obj/
 
+DIR_LIB = ./libft/
+
 SRC_DIR = ./srcs/
 
-MAIN =
+MAIN1 = server.c
 
-FILES =  \
+MAIN2 = client.c
 
-OBJS = $(patsubst %.c, $(DIR_OBJ)%.o, $(FILES)) $(patsubst %.c, $(DIR_OBJ)%.o, $(MAIN))
+FILES = package.c \
+		manage_file.c \
+		check.c
 
-DEP_OBJ = src_msg \
-		  $(OBJS)
+OBJS1 = $(patsubst %.c, $(DIR_OBJ)%.o, $(FILES)) $(patsubst %.c, $(DIR_OBJ)%.o, $(MAIN1))
+
+OBJS2 = $(patsubst %.c, $(DIR_OBJ)%.o, $(FILES)) $(patsubst %.c, $(DIR_OBJ)%.o, $(MAIN2))
+
+DEP_OBJ1 = src_msg \
+		  $(OBJS1)
+
+DEP_OBJ2 = src_msg \
+		  $(OBJS2)
 
 RM = /bin/rm -rf
 
-all: $(NAME)
+all: $(NAME1) $(NAME2)
 
-$(NAME): mkdirobj $(DEP_OBJ)
-		@ $(shell ln -s $(NAME) $(LIEN))
-		@ /bin/echo -n "Archiving object in $(NAME):"
-		@ $(CC) -shared -o $(NAME) $(OBJS) $(MFLAGS)
+$(NAME1): mkdirobj $(DEP_OBJ1)
+		@ /bin/echo -n "Archiving object in $(NAME1):"
+		@ $(CC) -o $(NAME1) $(OBJS1) $(MFLAGS) -L $(DIR_LIB) -lft
+		@ echo " \033[32mAll done!\033[0m"
+
+$(NAME2): mkdirobj $(DEP_OBJ2)
+		@ /bin/echo -n "Archiving object in $(NAME2):"
+		@ $(CC) -o $(NAME2) $(OBJS2) $(MFLAGS) -L $(DIR_LIB) -lft
 		@ echo " \033[32mAll done!\033[0m"
 
 $(DIR_OBJ)%.o: $(SRC_DIR)%.c
 	@ /bin/echo -n "    $(notdir $@)"
-	@ $(CC) $(CFLAGS) -c -o $@ $< -I $(INCLUDE_DIR) -I ./libft/includes
+	@ $(CC) $(CFLAGS) -c -o $@ $< -I $(INCLUDE_DIR)
 	@ echo " \033[32mOK\033[0m"
 
 mkdirobj:
@@ -46,8 +63,8 @@ clean:
 
 fclean: clean
 	@ /bin/echo -n "Removing library:"
-	@ $(RM) $(NAME)
-	@ $(RM) $(LIEN)
+	@ $(RM) $(NAME1)
+	@ $(RM) $(NAME2)
 	@ echo " \033[32mdone\033[0m"
 
 re: fclean all

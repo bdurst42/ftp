@@ -28,7 +28,8 @@ void			ftp_send_package(char *str, int sock, char flag);
 char			*ftp_get_package(int sock, t_header *header);
 void			ftp_get_file(char *file, int sock);
 void			ftp_send_files(char *cmd, char **file, int sock, char flag);
-char			**ftp_get_args(char **args, char *opt, char *path);
+char			**ftp_get_args(char **args, char opt, char *path);
 char			*ftp_check_path(char *old_path, char *path);
+int             ftp_find_last_directory(char *path);
 
 #endif
