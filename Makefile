@@ -22,7 +22,8 @@ MAIN2 = client.c
 
 FILES = package.c \
 		manage_file.c \
-		check.c
+		check.c \
+		nmatch.c
 
 OBJS1 = $(patsubst %.c, $(DIR_OBJ)%.o, $(FILES)) $(patsubst %.c, $(DIR_OBJ)%.o, $(MAIN1))
 

@@ -8,13 +8,17 @@ void		ftp_send_files(char *cmd, char **file, int sock, char flag)
 	ssize_t		ret;
 
 	i = 0;
-	ftp_send_package(cmd, sock, 0);
+	ftp_send_package(cmd, sock, 0, -1);
 	while (file[i])
 	{
 //		ft_putstr("send file: file name = ");
 //		ft_putendl(file[i]);
 		if ((fd = open(file[i], O_RDONLY)) == -1)
-			ftp_error(NULL, "send file open failure\n");
+		{
+			ftp_send_package("ERROR: open failure", sock, 0, -1);
+			ft_putstr("ERROR: open failure\n");
+			return ;
+		}
 		else
 		{
 			while ((ret = read(fd, buff, MAX_PACKAGE_SIZE)) > 0)
@@ -24,13 +28,17 @@ void		ftp_send_files(char *cmd, char **file, int sock, char flag)
 			//	ft_putendl(buff);
 			//	ft_putendl("============================================================");
 				flag |= F_CONTINUE;
-				ftp_send_package(buff, sock, flag);
+				ftp_send_package(buff, sock, flag, lseek(fd, 0, SEEK_END));
 			}
-			if (ret == -1)
-				ftp_error(NULL, "read failure\n");
 			close(fd);
+			if (ret == -1)
+			{
+				ftp_send_package("ERROR: read failure", sock, 0, -1);
+				ft_putstr("ERROR: read failure\n");
+				return ;
+			}
+			ftp_send_package("", sock, 0, -1);
 		}
-		ftp_send_package("", sock, 0);
 		++i;
 	}
 }
@@ -43,7 +51,11 @@ void            ftp_get_file(char *file, int sock)
 
 	if (file)
 		if ((fd = open(file, O_WRONLY | O_CREAT | O_TRUNC, 0777)) == -1)
-			ftp_error(NULL, "get file open failure\n");
+		{
+			ftp_send_package("ERROR: open failure", sock, 0, -1);
+			ft_putstr("ERROR: open failure\n");
+			return ;
+		}
 	header.flag |= F_CONTINUE;
 	while (header.flag & F_CONTINUE)
 	{
@@ -68,7 +80,12 @@ void            ftp_get_file(char *file, int sock)
 				ft_putstr(buff);
 				ft_putendl("////////////////////////////////////////////////////");*/
 				if ((write(fd, buff, header.nb_bytes)) == -1)
-					ftp_error(NULL, "write failure\n");
+				{
+					close(fd);
+					ftp_send_package("ERROR: write failure", sock, 0, -1);
+					ft_putstr("ERROR: write failure\n");
+					return ;
+				}
 			}
 			else
 			{
