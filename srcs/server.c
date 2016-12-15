@@ -32,11 +32,8 @@ void			ftp_ls(char **args, int c_sock)
 	pid_t	father;
 	int		fd;
 	int		stat_loc;
-	char	*file[2];
-	
-	file[0] = FILE_BUFFER;
-	file[1] = NULL;
-	if ((fd = open(file[0], O_RDWR | O_CREAT | O_TRUNC, 0777)) == -1)	
+
+	if ((fd = open(FILE_BUFFER, O_RDWR | O_CREAT | O_TRUNC, 0777)) == -1)	
 	{
 		ftp_send_package("ERROR: create tmp file fail !", c_sock, 0, -1);
 		return ;
@@ -58,7 +55,8 @@ void			ftp_ls(char **args, int c_sock)
 	{
 		wait4(0, &stat_loc, 0, 0);
 		close(fd);
-		ftp_send_files("ls", file, c_sock, 0);
+		ftp_send_package("ls", c_sock, 0, -1);
+		ftp_send_file(FILE_BUFFER, c_sock, 0);
 	}
 }
 
@@ -66,11 +64,8 @@ char            ftp_is_cmd(char *cmd, int c_sock, char *path)
 {
 	char		**args;
 	t_list		*list;
-	t_list		*tmp;
-	uint32_t	i;
 
 //	ft_putendl("IS CMMDDDDDDDDDDDDDDDDDDD");
-	i = 0;
 	if (!ft_strcmp(cmd, "pwd"))
 		ftp_send_package(getcwd(NULL, 0), c_sock, 0, -1);
 	else if (!ft_strncmp(cmd, "ls", 2))
@@ -85,20 +80,15 @@ char            ftp_is_cmd(char *cmd, int c_sock, char *path)
 	else if (!ft_strncmp(cmd, "get ", 4))
 	{
 		list = ftp_get_args(ft_strsplit(cmd, ' '), 0, path, c_sock);
-		//ftp_send_files(cmd, args + 1, c_sock, 1);
+		ft_putendl("GETTTTTTTTTTTTTTT");
+		ft_putendl(cmd);
+		ftp_manage_send_cmd(cmd, list->next, c_sock, 1);
+		ft_putendl("WTF AFTERR");
 	}
 	else if (!ft_strncmp(cmd, "put ", 4))
 	{
 		list = ftp_get_args(ft_strsplit(cmd, ' '), 0, NULL, c_sock);
-		tmp = list->next;
-		while (tmp)
-		{
-//			ft_putstr("||||||||||||||||||| ");
-//			ft_putstr(args[i]);
-//			ft_putendl(" |||||||||||||||||||");
-			ftp_get_file((char*)tmp->data, c_sock);
-			tmp = tmp->next;
-		}
+		ftp_manage_get_cmd(list->next, c_sock);
 	}
 	else if (!ft_strcmp(cmd, "quit"))
 	{
@@ -120,7 +110,7 @@ void		ftp_fork(int c_sock)
 	path = getcwd(NULL, 0);
 	if ((pid = fork()) == -1)
 		ftp_send_package("ERROR: fork failure !", c_sock, 0, -1);
-	else if (pid == 0)
+	else if (pid != 0)
 	{
 		ftp_send_package("SUCCES: connection", c_sock, 0, -1);
 		while (ftp_is_cmd(ftp_get_package(c_sock, &header), c_sock, path))

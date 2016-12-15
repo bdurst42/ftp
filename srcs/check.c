@@ -31,20 +31,27 @@ int					ftp_is_dir(char *dir)
 	return S_ISDIR(statbuf.st_mode);
 }
 
-t_list				*ftp_opendir(char *dir_name, t_list *list, char *path, int c_sock)
+DIR					*ftp_opendir(char *dir_name, int c_sock)
 {
 	DIR				*dir;
-	struct dirent	*ent;
 
 	if (!(dir = opendir(dir_name)))
 	{
 		ftp_send_package("ERROR: opendir failure", c_sock, 0, -1);
 		return (NULL);
 	}
-	else
+	return (dir);
+}
+
+t_list				*ftp_manage_stars(char *dir_name, t_list *list, char *path, int c_sock)
+{
+	DIR				*dir;
+	struct dirent	*ent;
+
+	if ((dir = ftp_opendir(dir_name, c_sock)))
 	{
-		ft_putstr("path ================ ");
-		ft_putendl(ftp_get_file_name(path));
+		//ft_putstr("path ================ ");
+		//ft_putendl(ftp_get_file_name(path));
 		while ((ent = readdir (dir)) != NULL)
 		{
 			ft_putendl(ent->d_name);
@@ -102,13 +109,13 @@ t_list				*ftp_get_args(char **args, char opt, char *path, int c_sock)
 				if (!(pos = ftp_find_last_directory(args[i])))
 				{
 					ft_putendl("pos 0");
-					list = ftp_opendir(ft_strjoin(getcwd(NULL, 0), "/"), list, args[i], c_sock);
+					list = ftp_manage_stars(ft_strjoin(getcwd(NULL, 0), "/"), list, args[i], c_sock);
 				}
 				else
 				{
 					dir = ftp_check_path(path, ft_strsub(ft_strtrim(args[i]), 0, pos));
 					if (ftp_is_dir(dir))
-						list = ftp_opendir(ft_strjoin(dir, "/"), list, args[i], c_sock);
+						list = ftp_manage_stars(ft_strjoin(dir, "/"), list, args[i], c_sock);
 				}
 			}
 			else
@@ -118,14 +125,13 @@ t_list				*ftp_get_args(char **args, char opt, char *path, int c_sock)
 			ft_node_push_back(&list, ft_strtrim(args[i]));
 //		ft_putendl(args[i]);
 	}
-		ft_putendl("ARGS:");
+	/*ft_putendl("ARGS:");
 	while (list)
 	{
 		ft_putendl((char*)list->data);
 		list = list->next;
-	}
+	}*/
 //	ft_putendl("");
-	exit(0);
 	return (list);
 }
 

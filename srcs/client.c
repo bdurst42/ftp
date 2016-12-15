@@ -39,7 +39,7 @@ void		ftp_parse_cmd(char *cmd, int sock)
 	if (!ft_strncmp(cmd, "put ", 4))
 	{
 		list = ftp_get_args(ft_strsplit(cmd, ' '), 0, NULL, sock);
-		//ftp_send_files(cmd, args + 1, sock, 1);
+		ftp_manage_send_cmd(cmd, list->next, sock, 1);
 	}
 	else
 		ftp_send_package(cmd, sock, 0, -1);
@@ -48,9 +48,9 @@ void		ftp_parse_cmd(char *cmd, int sock)
 char		ftp_ret_cmd(char *cmd, int sock)
 {
 	t_list	*list;
-	t_list	*tmp;
-	int		i;
 
+	ft_putstr("CLIENT RET -> ");
+	ft_putendl(cmd);
 	if (!ft_strcmp(cmd, "quit"))
 	{
 		close(sock);
@@ -60,14 +60,9 @@ char		ftp_ret_cmd(char *cmd, int sock)
 		ftp_get_file(NULL, sock);
 	else if (!ft_strncmp(cmd, "get ", 4))
 	{
-		i = 1;
+		ft_putendl("CLIENTTTTTTTTTTT GETTTTT");
 		list = ftp_get_args(ft_strsplit(cmd, ' '), 0, NULL, sock);
-		tmp = list->next;
-		while (tmp)
-		{
-			ftp_get_file((char*)tmp->data, sock);
-			tmp = tmp->next;
-		}
+		ftp_manage_get_cmd(list->next, sock);
 	}
 	else
 		ft_putendl(cmd);

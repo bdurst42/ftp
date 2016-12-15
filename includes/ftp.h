@@ -29,11 +29,15 @@ void			ftp_error(char *format_string, char *str, int sock);
 void			ftp_send_package(char *str, int sock, char flag, long size);
 char			*ftp_get_package(int sock, t_header *header);
 void			ftp_get_file(char *file, int sock);
-void			ftp_send_files(char *cmd, char **file, int sock, char flag);
+void			ftp_send_file(char *file, int sock, char flag);
 t_list			*ftp_get_args(char **args, char opt, char *path, int sock);
 char			*ftp_check_path(char *old_path, char *path);
 int             ftp_find_last_directory(char *path);
 int				nmatch(char *s1, char *s2);
 char            **ftp_list_to_tabstr(t_list *list);
+DIR				*ftp_opendir(char *dir_name, int c_sock);
+int				ftp_is_dir(char *dir);
+void			ftp_manage_send_cmd(char *cmd, t_list *list, int sock, char flag);
+void        	ftp_manage_get_cmd(t_list *list, int sock);
 
 #endif
