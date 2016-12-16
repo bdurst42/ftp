@@ -1,7 +1,3 @@
-NAME1 = server
-
-NAME2 = client
-
 CC = gcc
 
 CFLAGS = -Wall -Wextra -Werror
@@ -37,16 +33,18 @@ DEP_OBJ2 = src_msg \
 
 RM = /bin/rm -rf
 
-all: $(NAME1) $(NAME2)
+all: serveur client
 
-$(NAME1): mkdirobj $(DEP_OBJ1)
+serveur: mkdirobj $(DEP_OBJ1)
+		@ make -C $(DIR_LIB)
 		@ /bin/echo -n "Archiving object in $(NAME1):"
-		@ $(CC) -o $(NAME1) $(OBJS1) $(MFLAGS) -L $(DIR_LIB) -lft
+		@ $(CC) -o $@ $(OBJS1) $(MFLAGS) -L $(DIR_LIB) -lft
 		@ echo " \033[32mAll done!\033[0m"
 
-$(NAME2): mkdirobj $(DEP_OBJ2)
+client: mkdirobj $(DEP_OBJ2)
+		@ make -C $(DIR_LIB)
 		@ /bin/echo -n "Archiving object in $(NAME2):"
-		@ $(CC) -o $(NAME2) $(OBJS2) $(MFLAGS) -L $(DIR_LIB) -lft
+		@ $(CC) -o $@ $(OBJS2) $(MFLAGS) -L $(DIR_LIB) -lft
 		@ echo " \033[32mAll done!\033[0m"
 
 $(DIR_OBJ)%.o: $(SRC_DIR)%.c
@@ -58,14 +56,16 @@ mkdirobj:
 	@ mkdir -p $(DIR_OBJ)
 
 clean:
+	@ make clean -C $(DIR_LIB)
 	@ /bin/echo -n "Removing object files:"
 	@ $(RM) $(DIR_OBJ)
 	@ echo " \033[32mdone\033[0m"
 
 fclean: clean
+	@ make fclean -C $(DIR_LIB)
 	@ /bin/echo -n "Removing library:"
-	@ $(RM) $(NAME1)
-	@ $(RM) $(NAME2)
+	@ $(RM) serveur
+	@ $(RM) client
 	@ echo " \033[32mdone\033[0m"
 
 re: fclean all
@@ -73,4 +73,4 @@ re: fclean all
 src_msg:
 	@ echo " src functions:"
 
-.PHONY : all clean fclean re
+.PHONY : all clean fclean re client serveur

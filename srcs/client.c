@@ -1,21 +1,37 @@
 #include "ftp.h"
 
-static int	ftp_create_client(char *addr, int port)
+static int	ftp_create_client(char *addr, char *port)
 {
 	int					sock;
-	struct protoent		*proto;
-	struct sockaddr_in	sin;
-	struct hostent		*host;
+	//struct protoent		*proto;
+	//struct hostent		*host;
+	struct addrinfo		info;
+	struct addrinfo		*res;
 
-	if (!(proto = getprotobyname("tcp")))
-		ftp_error(NULL, "ERROR: getprotobyname failure !\n", 0);
-	host = gethostbyname(addr);
-	sock = socket(PF_INET, SOCK_STREAM, proto->p_proto);
-	sin.sin_family = AF_INET;
-	sin.sin_port = htons(port);
-	sin.sin_addr.s_addr = *(unsigned int *)host->h_addr;
-	if ((connect(sock, (const struct sockaddr*)&sin, sizeof(struct sockaddr_in))) == -1)
+	//if (!(proto = getprotobyname("tcp")))
+	//	ftp_error(NULL, "ERROR: getprotobyname failure !\n", 0);
+	//host = gethostbyname(addr);
+	//res = NULL;
+	ft_putendl("before");
+	ft_memset(&info, 0, sizeof(info));
+	ft_putendl("after");
+	info.ai_family = PF_INET;
+	//hint.ai_flags = AI_NUMERICHOST;
+	info.ai_socktype = SOCK_STREAM;
+	info.ai_protocol = IPPROTO_TCP;
+	if (getaddrinfo(addr, port, &info, &res))
+	{
+		free(res);
+		ftp_error(NULL, "ERROR: getaddrinfo failure !\n", 0);
+	}
+	sock = socket(info.ai_family, info.ai_socktype, info.ai_protocol);
+	//res->ai_addr->s_addr = *(unsigned int *)host->h_addr;
+	if ((connect(sock, res->ai_addr, res->ai_addrlen)) == -1)
+	{
+		free(res);
 		ftp_error(NULL, "ERROR: connect failure !\n", 0);
+	}
+	free(res);
 	return (sock);	
 }
 
@@ -69,16 +85,16 @@ char		ftp_ret_cmd(char *cmd, int sock)
 
 int			main(int ac, char *av[])
 {
-	int					port;
+//	int					port;
 	int					sock;
 	char				*cmd;
 	t_header			header;
 
 	if (ac != 3)
 		ftp_error("Usage: %s <addr> <port>\n", av[0], 0);
-	if (!(port = ft_atoi(av[2])) && av[1][0] != '0')
-		ftp_error(NULL, "ERROR: Invalid port !\n", 0);
-	sock = ftp_create_client(av[1], port);
+	//if (!(port = ft_atoi(av[2])) && av[1][0] != '0')
+	///	ftp_error(NULL, "ERROR: Invalid port !\n", 0);
+	sock = ftp_create_client(av[1], av[2]);
 	while (1)
 	{
 		if ((cmd = ftp_get_package(sock, &header)))

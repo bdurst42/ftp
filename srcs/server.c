@@ -1,18 +1,26 @@
 #include "ftp.h"
 
-static int	ftp_create_server(int port)
+static int	ftp_create_server(char *port)
 {
 	int					sock;
-	struct protoent		*proto;
-	struct sockaddr_in	sin;
+	struct addrinfo		info;
+	struct addrinfo		*res;
+	//struct protoent		*proto;
+	//struct sockaddr_in	sin;
 
-	if (!(proto = getprotobyname("tcp")))
-		ftp_error(NULL, "ERROR: getprotobyname failure !\n", 0);
-	sock = socket(PF_INET, SOCK_STREAM, proto->p_proto);
-	sin.sin_family = AF_INET;
-	sin.sin_port = htons(port);
-	sin.sin_addr.s_addr = htonl(INADDR_ANY);
-	if ((bind(sock, (const struct sockaddr*)&sin, sizeof(struct sockaddr_in))) == -1)
+	//if (!(proto = getprotobyname("tcp")))
+	//	ftp_error(NULL, "ERROR: getprotobyname failure !\n", 0);
+	ft_memset(&info, 0, sizeof(info));
+	info.ai_family = PF_INET;
+	info.ai_socktype = SOCK_STREAM;
+	info.ai_protocol = IPPROTO_TCP;
+	if (getaddrinfo(NULL, port, &info, &res))
+	{
+		free(res);
+		ftp_error(NULL, "ERROR: getaddrinfo failure !\n", 0);
+	}
+	sock = socket(info.ai_family, info.ai_socktype, info.ai_protocol);
+	if ((bind(sock, res->ai_addr, res->ai_addrlen)) == -1)
 		ftp_error(NULL, "ERROR: bind failure !\n", 0);
 	if ((listen(sock, 512)) == -1)
 		ftp_error(NULL, "ERROR: listen failure !\n", 0);
@@ -33,6 +41,10 @@ void			ftp_ls(char **args, int c_sock)
 	int		fd;
 	int		stat_loc;
 
+	for(int i = 0; args[i]; i++)
+	{
+		ft_putendl(args[i]);
+	}
 	if ((fd = open(FILE_BUFFER, O_RDWR | O_CREAT | O_TRUNC, 0777)) == -1)	
 	{
 		ftp_send_package("ERROR: create tmp file fail !", c_sock, 0, -1);
@@ -64,6 +76,7 @@ char            ftp_is_cmd(char *cmd, int c_sock, char *path)
 {
 	char		**args;
 	t_list		*list;
+	int			i;
 
 //	ft_putendl("IS CMMDDDDDDDDDDDDDDDDDDD");
 	if (!ft_strcmp(cmd, "pwd"))
@@ -71,6 +84,7 @@ char            ftp_is_cmd(char *cmd, int c_sock, char *path)
 	else if (!ft_strncmp(cmd, "ls", 2))
 	{
 		args = ftp_list_to_tabstr(ftp_get_args(ft_strsplit(cmd, ' '), 1, path, c_sock));
+		ft_putendl("ftp_ls");
 		ftp_ls(args, c_sock);
 	}
 	else if (!ft_strncmp(cmd, "cd ", 3))
@@ -86,6 +100,22 @@ char            ftp_is_cmd(char *cmd, int c_sock, char *path)
 	{
 		list = ftp_get_args(ft_strsplit(cmd, ' '), 0, NULL, c_sock);
 		ftp_manage_get_cmd(list->next, c_sock);
+	}
+	else if (!ft_strncmp(cmd, "mkdir ", 6))
+	{
+		args = ft_strsplit(cmd, ' ');
+		i = 0;
+		while (args[++i])
+			ftp_mkdir(args[i], c_sock);
+		ftp_send_package("SUCCES: mkdir", c_sock, 0, -1);
+	}
+	else if (!ft_strncmp(cmd, "rmdir ", 6))
+	{
+		args = ft_strsplit(cmd, ' ');
+		i = 0;
+		while (args[++i])
+			ftp_rmdir(args[i], c_sock);
+		ftp_send_package("SUCCES: rmdir", c_sock, 0, -1);
 	}
 	else if (!ft_strcmp(cmd, "quit"))
 	{
@@ -117,7 +147,7 @@ void		ftp_fork(int c_sock)
 
 int			main(int ac, char *av[])
 {
-	int					port;
+	//int					port;
 	int					sock;
 	int					c_sock;
 	uint32_t			c_sock_len;
@@ -125,9 +155,9 @@ int			main(int ac, char *av[])
 
 	if (ac != 2)
 		ftp_error("Usage: s% <port>\n", av[0], 0);
-	if (!(port = ft_atoi(av[1])) && av[1][0] != '0')
+	/*if (!(port = ft_atoi(av[1])) && av[1][0] != '0')
 		ftp_error(NULL, "ERROR: Invalid port !\n", 0);
-	if ((sock = ftp_create_server(port)) == -1)
+	*/if ((sock = ftp_create_server(av[1])) == -1)
 		return (-1);
 	while (1)
 	{

@@ -75,13 +75,14 @@ char				**ftp_list_to_tabstr(t_list *list)
 
 	tmp = list;
 	size = ft_list_size(list);
+	ft_putstr("\n");
 	if (!(args = (char**)malloc(sizeof(char*) * (size + 1))))
 		ftp_error(NULL, "ERROR: malloc failure\n", 0);
 	args[size] = NULL;
 	i = 0;
 	while (tmp)
 	{
-		args[i] = (char*)tmp->data;	
+		args[i++] = (char*)tmp->data;	
 		tmp = tmp->next;
 	}
 	return (args);
@@ -96,26 +97,26 @@ t_list				*ftp_get_args(char **args, char opt, char *path, int c_sock)
 
 	i = -1;
 	list = NULL;
-//	ft_putendl("ARGS:");
 	while (args[++i])
 	{
+		ft_putendl(args[i]);
 		if (!i || !path)
-			ft_node_push_back(&list, ftp_get_file_name(args[i]));
+			ft_node_push_back(&list, ftp_get_file_name(ft_strtrim(args[i])));
 		else if (!opt || args[i][0] != '-')
 		{
 			if (ft_strchr(args[i], '*'))
 			{
-				ft_putendl("******STARS******");
-				if (!(pos = ftp_find_last_directory(args[i])))
+				//ft_putendl("******STARS******");
+				if (!(pos = ftp_find_last_directory(ft_strtrim(args[i]))))
 				{
-					ft_putendl("pos 0");
-					list = ftp_manage_stars(ft_strjoin(getcwd(NULL, 0), "/"), list, args[i], c_sock);
+				//	ft_putendl("pos 0");
+					list = ftp_manage_stars(ft_strjoin(getcwd(NULL, 0), "/"), list, ft_strtrim(args[i]), c_sock);
 				}
 				else
 				{
 					dir = ftp_check_path(path, ft_strsub(ft_strtrim(args[i]), 0, pos));
 					if (ftp_is_dir(dir))
-						list = ftp_manage_stars(ft_strjoin(dir, "/"), list, args[i], c_sock);
+						list = ftp_manage_stars(ft_strjoin(dir, "/"), list, ft_strtrim(args[i]), c_sock);
 				}
 			}
 			else
@@ -125,13 +126,15 @@ t_list				*ftp_get_args(char **args, char opt, char *path, int c_sock)
 			ft_node_push_back(&list, ft_strtrim(args[i]));
 //		ft_putendl(args[i]);
 	}
-	/*ft_putendl("ARGS:");
-	while (list)
+	ft_putendl("ARGS:");
+	t_list *tmp;
+	tmp = list;
+	while (tmp)
 	{
-		ft_putendl((char*)list->data);
-		list = list->next;
-	}*/
-//	ft_putendl("");
+		ft_putendl((char*)tmp->data);
+		tmp = tmp->next;
+	}
+	ft_putendl("");
 	return (list);
 }
 

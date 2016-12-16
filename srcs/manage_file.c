@@ -1,8 +1,18 @@
 #include "ftp.h"
 
+char	ftp_rmdir(char *dir_name, int sock)
+{
+	if ((rmdir(dir_name)) == -1)
+	{
+		ftp_send_package("ERROR: rmdir failure", sock, 0, -1);
+		return (0);
+	}
+	return (1);
+}
+
+
 char	ftp_mkdir(char *dir_name, int sock)
 {
-		  ft_putendl(dir_name);
 	if ((mkdir(dir_name, 0777)) == -1)
 	{
 		ftp_send_package("ERROR: mkdir failure", sock, 0, -1);
@@ -41,16 +51,16 @@ void		ftp_manage_get_cmd(t_list *list, int sock)
 		while (header.flag & F_CONTINUE || header.flag & F_FILE_NO_END)
 		{
 			cmd = ftp_get_package(sock, &header);
-			ft_putstr("get cmd");
+			//ft_putstr("get cmd");
 			if (cmd)
 			{
-				ft_putstr(cmd);
-			ft_putstr("\n");
-			if (!ft_strncmp(cmd, "mkdir ", 6))
-				ftp_mkdir(cmd + 6, sock);
-			else if (!ft_strncmp(cmd, "mkfile ", 7))
-				ftp_get_file(cmd + 7, sock);
+			//	ft_putstr(cmd);
+				if (!ft_strncmp(cmd, "mkdir ", 6))
+					ftp_mkdir(cmd + 6, sock);
+				else if (!ft_strncmp(cmd, "mkfile ", 7))
+					ftp_get_file(cmd + 7, sock);
 			}
+			//ft_putstr("\n");
 		}
 		tmp = tmp->next;
 	}
@@ -70,12 +80,12 @@ void		ftp_manage_send_cmd(char *cmd, t_list *list, int sock, char flag)
 	while (tmp)
 	{
 		path = (char*)tmp->data + ft_strlen(current_path) + 1;
-		ft_putstr("path = ");
-		ft_putendl(path);
+		//ft_putstr("path = ");
+		//ft_putendl(path);
 		if (ftp_is_dir((char*)tmp->data))
 		{
-			ft_putstr("dir -> ");
-			ft_putendl((char*)tmp->data);
+		//	ft_putstr("dir -> ");
+		//	ft_putendl((char*)tmp->data);
 			ftp_send_package(ft_strjoin("mkdir ", path), sock, 2, -1);
 			if (!(new = ftp_get_system_file((char*)tmp->data, sock)))
 				return ;
@@ -83,8 +93,8 @@ void		ftp_manage_send_cmd(char *cmd, t_list *list, int sock, char flag)
 		}
 		else
 		{
-			ft_putstr("file -> ");
-			ft_putendl((char*)tmp->data);
+		//	ft_putstr("file -> ");
+		//	ft_putendl((char*)tmp->data);
 			ftp_send_package(ft_strjoin("mkfile ", path), sock, 2, -1);
 			ftp_send_file(path, sock, flag);
 			
@@ -92,8 +102,8 @@ void		ftp_manage_send_cmd(char *cmd, t_list *list, int sock, char flag)
 		tmp = tmp->next;
 		if (cmd)
 		{
-				  ft_putstr("ENDDDDD\n");
-				  ftp_send_package("", sock, 0, -1);
+			//		  ft_putstr("ENDDDDD\n");
+			ftp_send_package("", sock, 0, -1);
 		}
 	}
 }
@@ -104,8 +114,7 @@ void		ftp_send_file(char *file, int sock, char flag)
 	char		buff[MAX_PACKAGE_SIZE + 1];
 	ssize_t		ret;
 
-	ft_putstr("SEND FILE: file name = ");
-			ft_putendl(file);
+	//ft_putstr("SEND FILE: file name = ");
 	if ((fd = open(file, O_RDONLY)) == -1)
 	{
 		ftp_send_package("ERROR: open failure", sock, 0, -1);
@@ -132,6 +141,7 @@ void		ftp_send_file(char *file, int sock, char flag)
 		}
 	}
 	ftp_send_package("", sock, 0, -1);
+	ft_putendl(file);
 }
 
 void            ftp_get_file(char *file, int sock)
@@ -140,8 +150,9 @@ void            ftp_get_file(char *file, int sock)
 	char        *buff;
 	int			fd;
 
-	ft_putstr("GET FILE:");
-	ft_putendl(file);
+	ft_putstr("GET FILE: \n");
+	if (file)
+		ft_putendl(file);
 	if (file)
 		if ((fd = open(file, O_WRONLY | O_CREAT | O_TRUNC, 0777)) == -1)
 		{

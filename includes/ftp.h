@@ -40,5 +40,7 @@ DIR				*ftp_opendir(char *dir_name, int c_sock);
 int				ftp_is_dir(char *dir);
 void			ftp_manage_send_cmd(char *cmd, t_list *list, int sock, char flag);
 void        	ftp_manage_get_cmd(t_list *list, int sock);
+char			ftp_mkdir(char *dir_name, int sock);
+char			ftp_rmdir(char *dir_name, int sock);
 
 #endif
