@@ -15,6 +15,7 @@
 # define F_CREATE_FILE	(1 << 0)
 # define F_CONTINUE (1 << 1)
 # define F_CLIENT	(1 << 2)
+# define F_FILE_NO_END	(1 << 3)
 
 # define FILE_BUFFER "tmp"
 # define MAX_PACKAGE_SIZE 65000

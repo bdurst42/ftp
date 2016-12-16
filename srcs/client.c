@@ -49,8 +49,6 @@ char		ftp_ret_cmd(char *cmd, int sock)
 {
 	t_list	*list;
 
-	ft_putstr("CLIENT RET -> ");
-	ft_putendl(cmd);
 	if (!ft_strcmp(cmd, "quit"))
 	{
 		close(sock);
@@ -60,7 +58,7 @@ char		ftp_ret_cmd(char *cmd, int sock)
 		ftp_get_file(NULL, sock);
 	else if (!ft_strncmp(cmd, "get ", 4))
 	{
-		ft_putendl("CLIENTTTTTTTTTTT GETTTTT");
+		ft_putendl("GETTTTTTTTTTTTTTTTTTTTTTTTTT ---------------------------");
 		list = ftp_get_args(ft_strsplit(cmd, ' '), 0, NULL, sock);
 		ftp_manage_get_cmd(list->next, sock);
 	}

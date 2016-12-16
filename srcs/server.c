@@ -80,10 +80,7 @@ char            ftp_is_cmd(char *cmd, int c_sock, char *path)
 	else if (!ft_strncmp(cmd, "get ", 4))
 	{
 		list = ftp_get_args(ft_strsplit(cmd, ' '), 0, path, c_sock);
-		ft_putendl("GETTTTTTTTTTTTTTT");
-		ft_putendl(cmd);
 		ftp_manage_send_cmd(cmd, list->next, c_sock, 1);
-		ft_putendl("WTF AFTERR");
 	}
 	else if (!ft_strncmp(cmd, "put ", 4))
 	{
