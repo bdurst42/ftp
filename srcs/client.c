@@ -3,20 +3,11 @@
 static int	ftp_create_client(char *addr, char *port)
 {
 	int					sock;
-	//struct protoent		*proto;
-	//struct hostent		*host;
 	struct addrinfo		info;
 	struct addrinfo		*res;
 
-	//if (!(proto = getprotobyname("tcp")))
-	//	ftp_error(NULL, "ERROR: getprotobyname failure !\n", 0);
-	//host = gethostbyname(addr);
-	//res = NULL;
-	ft_putendl("before");
 	ft_memset(&info, 0, sizeof(info));
-	ft_putendl("after");
-	info.ai_family = PF_INET;
-	//hint.ai_flags = AI_NUMERICHOST;
+	info.ai_family = AF_UNSPEC;
 	info.ai_socktype = SOCK_STREAM;
 	info.ai_protocol = IPPROTO_TCP;
 	if (getaddrinfo(addr, port, &info, &res))
@@ -24,8 +15,11 @@ static int	ftp_create_client(char *addr, char *port)
 		free(res);
 		ftp_error(NULL, "ERROR: getaddrinfo failure !\n", 0);
 	}
-	sock = socket(info.ai_family, info.ai_socktype, info.ai_protocol);
-	//res->ai_addr->s_addr = *(unsigned int *)host->h_addr;
+	if (res->ai_family == AF_INET)
+			 ft_putendl("ipv4");
+	else if (res->ai_family == AF_INET6)
+			 ft_putendl("ipv6");
+	sock = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
 	if ((connect(sock, res->ai_addr, res->ai_addrlen)) == -1)
 	{
 		free(res);
@@ -92,8 +86,6 @@ int			main(int ac, char *av[])
 
 	if (ac != 3)
 		ftp_error("Usage: %s <addr> <port>\n", av[0], 0);
-	//if (!(port = ft_atoi(av[2])) && av[1][0] != '0')
-	///	ftp_error(NULL, "ERROR: Invalid port !\n", 0);
 	sock = ftp_create_client(av[1], av[2]);
 	while (1)
 	{

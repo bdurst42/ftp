@@ -2,30 +2,53 @@
 
 static int	ftp_create_server(char *port)
 {
+	int						sd;
+	int						on;
+	struct sockaddr_in6	serveraddr;
+
+	if ((sd = socket(AF_INET6, SOCK_STREAM, 0)) < 0)
+			  ftp_error(NULL, "socket failure", 0);
+	if (setsockopt(sd, SOL_SOCKET, SO_REUSEADDR, (char*)&on, sizeof(on)) < 0)
+			  ftp_error(NULL, "setsockopt failure", 0);
+	ft_memset(&serveraddr, 0, sizeof(serveraddr));
+	serveraddr.sin6_family = AF_INET6;
+	serveraddr.sin6_port = htons(ft_atoi(port));
+	serveraddr.sin6_addr = in6addr_any;
+	if (bind(sd, (struct sockaddr*)&serveraddr, sizeof(serveraddr)) < 0)
+			  ftp_error(NULL, "bind failure", 0);
+	if (listen(sd, 512) < 0)
+			  ftp_error(NULL, "listen failure", 0);
+	return (sd);
+}
+
+/*static int	ftp_create_server(char *port)
+{
 	int					sock;
 	struct addrinfo		info;
 	struct addrinfo		*res;
-	//struct protoent		*proto;
-	//struct sockaddr_in	sin;
 
-	//if (!(proto = getprotobyname("tcp")))
-	//	ftp_error(NULL, "ERROR: getprotobyname failure !\n", 0);
 	ft_memset(&info, 0, sizeof(info));
-	info.ai_family = PF_INET;
+	info.ai_family = AF_UNSPEC;
 	info.ai_socktype = SOCK_STREAM;
 	info.ai_protocol = IPPROTO_TCP;
+	info.ai_flags = AI_V4MAPPED;
 	if (getaddrinfo(NULL, port, &info, &res))
 	{
 		free(res);
 		ftp_error(NULL, "ERROR: getaddrinfo failure !\n", 0);
 	}
-	sock = socket(info.ai_family, info.ai_socktype, info.ai_protocol);
+	if (res->ai_family == AF_INET)
+			  ft_putendl("ipv4");
+	else if (res->ai_family == AF_INET6)
+			  ft_putendl("ipv6");
+	sock = socket(AF_UNSPEC, res->ai_socktype, res->ai_protocol);
+	res->ai_addr = (struct sockaddr*)&in6addr_any;
 	if ((bind(sock, res->ai_addr, res->ai_addrlen)) == -1)
 		ftp_error(NULL, "ERROR: bind failure !\n", 0);
 	if ((listen(sock, 512)) == -1)
 		ftp_error(NULL, "ERROR: listen failure !\n", 0);
 	return (sock);	
-}
+}*/
 
 void			ftp_cd(char *path, int c_sock)
 {
@@ -150,18 +173,14 @@ int			main(int ac, char *av[])
 	//int					port;
 	int					sock;
 	int					c_sock;
-	uint32_t			c_sock_len;
-	struct sockaddr_in	c_sock_in;
 
 	if (ac != 2)
 		ftp_error("Usage: s% <port>\n", av[0], 0);
-	/*if (!(port = ft_atoi(av[1])) && av[1][0] != '0')
-		ftp_error(NULL, "ERROR: Invalid port !\n", 0);
-	*/if ((sock = ftp_create_server(av[1])) == -1)
+	if ((sock = ftp_create_server(av[1])) == -1)
 		return (-1);
 	while (1)
 	{
-		if ((c_sock = accept(sock, (struct sockaddr*)&c_sock_in, &c_sock_len)) == -1)
+		if ((c_sock = accept(sock, NULL, NULL)) == -1)
 			ft_putstr("ERROR: accept failure !\n");
 		ftp_fork(c_sock);
 	}
