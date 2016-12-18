@@ -1,24 +1,32 @@
 #include "ftp.h"
 
-/*int             ftp_find_last_directory(char *path)
+char	ftp_rmdir(char *dir_name)
 {
-	int i;
+	struct stat st;
 
-	i = ft_strlen(path) - 1;
-	while (i > 0 && path[i] != '/')
-		--i;
-	return (i);
+	if (stat(dir_name, &st) != -1)
+	{
+		if (rmdir(dir_name) == -1)
+			return (-1);
+	}
+	else
+		return (-1);
+	return (1);
 }
 
-char				*ftp_get_file_name(char *file_path)
+char	ftp_mkdir(char *dir_name)
 {
-	int	len;
+	struct stat st;
 
-	len = ft_strlen(file_path) - 1;
-	while (len > -1 && file_path[len] != '/')
-		--len;
-	return (file_path + len + 1);
-}*/
+	if (stat(dir_name, &st) == -1)
+	{
+		if (mkdir(dir_name, 0777) == -1)
+			return (-1);
+	}
+	else
+		return (-1);
+	return (1);
+}
 
 int					ftp_is_dir(char *dir)
 {

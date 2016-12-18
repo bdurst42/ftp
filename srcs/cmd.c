@@ -26,7 +26,7 @@ static void	ftp_ls(char **args, int c_sock)
 	}
 	if ((father = fork()) == 0)
 	{
-		if (dup2(fd, 1) < 0)
+		if (dup2(fd, 1) < 0 || dup2(fd, 2) < 0)
 			ftp_send_package("ERROR: dup2 failure", c_sock, 0, -1);
 		else if (execv("/bin/ls", args) == -1)
 		{
@@ -43,15 +43,30 @@ static void	ftp_ls(char **args, int c_sock)
 	}
 }
 
-static void	ftp_manage_dir(char *cmd, int c_sock, char *msg, char (*f)(char *dir_name, int c_sock))
+static void	ftp_manage_dir(char *cmd, int c_sock, char del, char (*f)(char *dir_name))
 {
-	int		i;
+	int	i;
 	char	**args;
+	char	*msg;
 
 	args = ft_strsplit(cmd, ' ');
+	msg = NULL;
 	i = 0;
 	while (args[++i])
-		f(args[i], c_sock);
+		if (f(args[i]) == -1)
+			msg = ft_strjoin(ft_strjoin(msg, args[i]), " ");
+	if (!msg)
+	{
+		if (del)
+			msg = "SUCCES: rmdir";
+		else
+			msg = "SUCCES: mkdir";
+	}
+	else
+		if (del)
+			msg = ft_strjoin("ERROR: Can't delete ", msg);
+		else
+			msg = ft_strjoin("ERROR: Can't create ", msg);
 	ftp_send_package(msg, c_sock, 0, -1);
 }
 
@@ -84,9 +99,9 @@ char            ftp_is_cmd(char *cmd, int c_sock, char *path)
 			ftp_manage_get_cmd(list->next, c_sock);
 	}
 	else if (!ft_strncmp(cmd, "mkdir ", 6))
-		ftp_manage_dir(cmd, c_sock, "SUCCES: mkdir", &ftp_mkdir);
+		ftp_manage_dir(cmd, c_sock, 0, &ftp_mkdir);
 	else if (!ft_strncmp(cmd, "rmdir ", 6))
-		ftp_manage_dir(cmd, c_sock, "SUCCES: rmdir", &ftp_rmdir);
+		ftp_manage_dir(cmd, c_sock, 1, &ftp_rmdir);
 	else if (!ft_strcmp(cmd, "quit"))
 		return (ftp_quit(c_sock));
 	else

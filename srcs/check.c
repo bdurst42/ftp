@@ -32,7 +32,7 @@ t_list		*ftp_manage_stars(char *dir_name, t_list *list, char *path,
 	{
 		while ((ent = readdir(dir)) != NULL)
 			if (ent->d_name[0] != '.' &&
-			nmatch(ent->d_name, path + ftp_find_last_directory(path) + 1))
+			nmatch(ent->d_name, path + ftp_find_last_directory(path)))
 				ft_node_push_back(&list, ft_strjoin(dir_name, ent->d_name));
 		closedir(dir);
 	}
@@ -89,7 +89,7 @@ t_list		*ftp_get_args(char **args, char opt, char *path, int c_sock)
 		ft_putendl(args[i]);
 		if (!i || !path)
 			ft_node_push_back(&list, ft_strtrim(args[i]) +
-			ftp_find_last_directory(ft_strtrim(args[i])) + 1);
+			ftp_find_last_directory(ft_strtrim(args[i])));
 		else if (!opt || args[i][0] != '-')
 		{
 			if (ft_strchr(args[i], '*'))

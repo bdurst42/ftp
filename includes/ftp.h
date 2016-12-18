@@ -44,8 +44,8 @@ int				nmatch(char *s1, char *s2);
 
 DIR				*ftp_opendir(char *dir_name, int c_sock);
 int				ftp_is_dir(char *dir);
-char			ftp_mkdir(char *dir_name, int sock);
-char			ftp_rmdir(char *dir_name, int sock);
+char			ftp_mkdir(char *dir_name);
+char			ftp_rmdir(char *dir_name);
 
 void        	ftp_manage_get_cmd(t_list *list, int sock);
 void    	    ftp_manage_send_cmd(char *cmd, t_list *list, int sock, char flag);

@@ -1,26 +1,5 @@
 #include "ftp.h"
 
-char	ftp_rmdir(char *dir_name, int sock)
-{
-	if ((rmdir(dir_name)) == -1)
-	{
-		ftp_send_package("ERROR: rmdir failure", sock, 0, -1);
-		return (0);
-	}
-	return (1);
-}
-
-
-char	ftp_mkdir(char *dir_name, int sock)
-{
-	if ((mkdir(dir_name, 0777)) == -1)
-	{
-		ftp_send_package("ERROR: mkdir failure", sock, 0, -1);
-		return (0);
-	}
-	return (1);
-}
-
 t_list		*ftp_get_system_file(char *dir_name, int sock)
 {
 	t_list			*file;
@@ -56,7 +35,7 @@ void		ftp_manage_get_cmd(t_list *list, int sock)
 			{
 			//	ft_putstr(cmd);
 				if (!ft_strncmp(cmd, "mkdir ", 6))
-					ftp_mkdir(cmd + 6, sock);
+					ftp_mkdir(cmd + 6);
 				else if (!ft_strncmp(cmd, "mkfile ", 7))
 					ftp_get_file(cmd + 7, sock);
 			}
