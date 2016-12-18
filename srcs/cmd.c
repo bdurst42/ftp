@@ -11,19 +11,11 @@ static void	ftp_cd(char *path, int c_sock)
 static void	ftp_ls(char **args, int c_sock)
 {
 	pid_t	father;
-	int		fd;
-	int		stat_loc;
+	int	fd;
+	int	stat_loc;
 
-	for (int i = 0; args[i]; i++)
-	{
-		ft_putstr("arg = ");
-		ft_putendl(args[i]);
-	}
 	if ((fd = open(FILE_BUFFER, O_RDWR | O_CREAT | O_TRUNC, 0777)) == -1)	
-	{
-		ftp_send_package("ERROR: create tmp file fail !", c_sock, 0, -1);
 		return ;
-	}
 	if ((father = fork()) == 0)
 	{
 		if (dup2(fd, 1) < 0 || dup2(fd, 2) < 0)
@@ -91,7 +83,10 @@ char            ftp_is_cmd(char *cmd, int c_sock, char *path)
 	else if (!ft_strncmp(cmd, "get ", 4))
 	{
 		if ((list = ftp_get_args(ft_strsplit(cmd, ' '), 0, path, c_sock)))
+		{
+			ftp_send_package(cmd, c_sock, 0, -1);
 			ftp_manage_send_cmd(cmd, list->next, c_sock, 1);
+		}
 	}
 	else if (!ft_strncmp(cmd, "put ", 4))
 	{

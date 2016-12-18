@@ -21,7 +21,8 @@ FILES = package.c \
 		check.c \
 		nmatch.c \
 		cmd.c \
-		dir.c
+		dir.c \
+		args.c
 
 OBJS1 = $(patsubst %.c, $(DIR_OBJ)%.o, $(FILES)) $(patsubst %.c, $(DIR_OBJ)%.o, $(MAIN1))
 

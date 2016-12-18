@@ -44,6 +44,7 @@ DIR					*ftp_opendir(char *dir_name, int c_sock)
 	if (!(dir = opendir(dir_name)))
 	{
 		ftp_send_package("ERROR: opendir failure", c_sock, 0, -1);
+		ft_putstr("ERROR: opendir failure\n");
 		return (NULL);
 	}
 	return (dir);

@@ -1,10 +1,11 @@
 #include "ftp.h"
 
-char            *ftp_get_package(int sock, t_header *header)
+char	*ftp_get_package(int sock, t_header *header)
 {
 	char        *buff;
 	ssize_t     ret;
 
+	ft_putendl("get pack");
 	if ((ret = recv(sock, header, sizeof(t_header), 0)) > 0)
 	{
 		if (!(buff = (char*)malloc(sizeof(char) * (MAX_PACKAGE_SIZE + 1))))
@@ -25,10 +26,11 @@ char            *ftp_get_package(int sock, t_header *header)
 	return (NULL);
 }
 
-void		ftp_send_package(char *str, int sock, char flag, long size)
+void	ftp_send_package(char *str, int sock, char flag, long size)
 {
 	t_header	header;
 
+	ft_putendl("send pack");
 	if (size == -1)
 		header.nb_bytes = ft_strlen(str);
 	else
@@ -45,7 +47,7 @@ void		ftp_send_package(char *str, int sock, char flag, long size)
 		ftp_error(NULL, "ERROR: send failure\n", 0);
 }
 
-void		ftp_error(char *format_string, char *str, int sock)
+void	ftp_error(char *format_string, char *str, int sock)
 {
 	if (format_string)
 		printf(format_string, str);
