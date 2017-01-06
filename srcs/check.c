@@ -33,6 +33,25 @@ char			**ftp_list_to_tabstr(t_list *list)
 	return (args);
 }
 
+t_list	*ftp_tabstr_to_list(char **args)
+{
+	t_list	*list;
+	t_arg		*arg;
+	int		i;
+
+	i = -1;
+	list = NULL;
+	while(args[++i])
+	{
+		if (!(arg = (t_arg*)malloc(sizeof(t_arg))))
+			ftp_error(NULL, "ERROR: Malloc failure !", 0);
+		arg->str = ft_strtrim(args[i]);
+		arg->base = 1;
+		ft_node_push_back(&list, arg);
+	}
+	return (list);
+}
+
 static void	ftp_free_strjoin(char *s1, char **s2, char c)
 {
 	char	*tmp;
@@ -94,6 +113,7 @@ char			*ftp_check_path(char *o_p, char *path)
 			j = ftp_if_dot(&c_p, path, i);
 		i = j;
 	}
-	ftp_free_strjoin(o_p, &c_p, 1);
+	if (!c_p || !ft_strstr(c_p, o_p))
+		ftp_free_strjoin(o_p, &c_p, 1);
 	return (c_p);
 }

@@ -26,28 +26,36 @@ typedef struct	s_header
 	char		flag;
 }				t_header;
 
+typedef struct	s_arg
+{
+	char		*str;
+	char		base;
+}				t_arg;
+
 char			ftp_is_cmd(char *cmd, int c_sock, char *path);
 
 void			ftp_error(char *format_string, char *str, int sock);
 void			ftp_send_package(char *str, int sock, char flag, long size);
 char			*ftp_get_package(int sock, t_header *header);
 
-void			ftp_get_file(char *file, int sock);
+void			ftp_get_file(char *file, int sock, char client);
 void			ftp_send_file(char *file, int sock, char flag);
 
-t_list			*ftp_get_args(char **args, char opt, char *path, int sock);
+t_list			*ftp_get_args(t_list *args, char opt, char *path);
 char			*ftp_check_path(char *old_path, char *path);
 int             ftp_find_last_directory(char *path);
 char            **ftp_list_to_tabstr(t_list *list);
+t_list			*ftp_tabstr_to_list(char **arg);
 
 int				nmatch(char *s1, char *s2);
 
 DIR				*ftp_opendir(char *dir_name, int c_sock);
 int				ftp_is_dir(char *dir);
+int				ftp_is_file(char *path);
 char			ftp_mkdir(char *dir_name);
 char			ftp_rmdir(char *dir_name);
 
-void        	ftp_manage_get_cmd(t_list *list, int sock);
+void        	ftp_manage_get_cmd(t_list *list, int sock, char client);
 void    	    ftp_manage_send_cmd(char *cmd, t_list *list, int sock, char flag);
 
 #endif

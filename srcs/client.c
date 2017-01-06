@@ -44,10 +44,11 @@ static void	ftp_parse_cmd(char *cmd, int sock)
 
 	if (!ft_strncmp(cmd, "put ", 4))
 	{
-		list = ftp_get_args(ft_strsplit(cmd, ' '), 0, NULL, sock);
-		ftp_send_package(cmd, sock, 0, -1);
-		ftp_manage_send_cmd(cmd, list->next, sock, 1);
-		ft_putendl("after");
+		if ((list = ftp_get_args(ftp_tabstr_to_list(ft_strsplit(cmd, ' ')), 0, NULL)))
+		{
+			ftp_send_package(cmd, sock, 0, -1);
+			ftp_manage_send_cmd(cmd, list->next, sock, 1 +  F_CLIENT);
+		}
 	}
 	else
 		ftp_send_package(cmd, sock, 0, -1);
@@ -63,11 +64,11 @@ static char	ftp_ret_cmd(char *cmd, int sock)
 		return (0);
 	}
 	else if (!ft_strcmp(cmd, "ls"))
-		ftp_get_file(NULL, sock);
+		ftp_get_file(NULL, sock, 1);
 	else if (!ft_strncmp(cmd, "get ", 4))
 	{
-		if ((list = ftp_get_args(ft_strsplit(cmd, ' '), 0, NULL, sock)))
-			ftp_manage_get_cmd(list->next, sock);
+		if ((list = ftp_get_args(ftp_tabstr_to_list(ft_strsplit(cmd, ' ')), 0, NULL)))
+			ftp_manage_get_cmd(list->next, sock, 1);
 	}
 	else
 		ft_putendl(cmd);
@@ -85,7 +86,8 @@ int			main(int ac, char *av[])
 	sock = ftp_create_client(av[1], av[2]);
 	while (1)
 	{
-		if ((cmd = ftp_get_package(sock, &header)))
+		header.flag = 2;
+		while (header.flag & F_CONTINUE && (cmd = ftp_get_package(sock, &header)))
 			if (!(ftp_ret_cmd(cmd, sock)))
 				return (0);
 		while (!(cmd = ftp_get_stdin(sock)) || !cmd[0])

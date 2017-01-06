@@ -75,14 +75,14 @@ char            ftp_is_cmd(char *cmd, int c_sock, char *path)
 
 	if (!ft_strcmp(cmd, "pwd"))
 		ftp_send_package(getcwd(NULL, 0), c_sock, 0, -1);
-	else if (!ft_strncmp(cmd, "ls", 2))
-		ftp_ls(ftp_list_to_tabstr(ftp_get_args(ft_strsplit(cmd, ' '),
-		1, path, c_sock)), c_sock);
+	else if (!ft_strcmp(cmd, "ls") || !ft_strncmp(cmd, "ls ", 3))
+		ftp_ls(ftp_list_to_tabstr(ftp_get_args(ftp_tabstr_to_list(ft_strsplit(cmd, ' ')),
+		1, path)), c_sock);
 	else if (!ft_strncmp(cmd, "cd ", 3))
 		ftp_cd(ftp_check_path(path, ft_strtrim(cmd + 3)), c_sock);
 	else if (!ft_strncmp(cmd, "get ", 4))
 	{
-		if ((list = ftp_get_args(ft_strsplit(cmd, ' '), 0, path, c_sock)))
+		if ((list = ftp_get_args(ftp_tabstr_to_list(ft_strsplit(cmd, ' ')), 0, path)))
 		{
 			ftp_send_package(cmd, c_sock, 0, -1);
 			ftp_manage_send_cmd(cmd, list->next, c_sock, 1);
@@ -90,8 +90,9 @@ char            ftp_is_cmd(char *cmd, int c_sock, char *path)
 	}
 	else if (!ft_strncmp(cmd, "put ", 4))
 	{
-		if ((list = ftp_get_args(ft_strsplit(cmd, ' '), 0, NULL, c_sock)))
-			ftp_manage_get_cmd(list->next, c_sock);
+		if ((list = ftp_get_args(ftp_tabstr_to_list(ft_strsplit(cmd, ' ')), 0, NULL)))
+			ftp_manage_get_cmd(list->next, c_sock, 0);
+		ftp_send_package("", c_sock, 0, -1);
 	}
 	else if (!ft_strncmp(cmd, "mkdir ", 6))
 		ftp_manage_dir(cmd, c_sock, 0, &ftp_mkdir);

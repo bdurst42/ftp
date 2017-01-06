@@ -14,17 +14,24 @@ char	ftp_rmdir(char *dir_name)
 	return (1);
 }
 
-char	ftp_mkdir(char *dir_name)
+char	ftp_mkdir(char *dir_path)
 {
 	struct stat st;
+	int			i = 0;
+	char			*dir_name;
 
-	if (stat(dir_name, &st) == -1)
+	while(dir_path[i])
 	{
-		if (mkdir(dir_name, 0777) == -1)
-			return (-1);
+		while(dir_path[i] && dir_path[i] != '/')
+				  ++i;
+		dir_name = ft_strsub(dir_path, 0, i);
+		if (stat(dir_name, &st) == -1)
+		{
+			if (mkdir(dir_name, 0777) == -1)
+				return (-1);
+		}
+		++i;
 	}
-	else
-		return (-1);
 	return (1);
 }
 
@@ -43,8 +50,10 @@ DIR					*ftp_opendir(char *dir_name, int c_sock)
 
 	if (!(dir = opendir(dir_name)))
 	{
-		ftp_send_package("ERROR: opendir failure", c_sock, 0, -1);
-		ft_putstr("ERROR: opendir failure\n");
+		if (c_sock == -1)
+			printf("ERROR: opendir failure -> %s\n", dir_name);
+		else if (c_sock != -2)
+			ftp_send_package(ft_strjoin("ERROR: opendir failure -> ", dir_name), c_sock, 2, -1);
 		return (NULL);
 	}
 	return (dir);
