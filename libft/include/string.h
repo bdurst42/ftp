@@ -6,7 +6,7 @@
 /*   By: bdurst <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/12/13 19:47:25 by bdurst            #+#    #+#             */
-/*   Updated: 2014/12/16 20:30:57 by bdurst           ###   ########.fr       */
+/*   Updated: 2017/01/06 14:41:17 by bdurst           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,5 +48,6 @@ char				*ft_strtrim(char const *s);
 char				**ft_strsplit(char const *s, char c);
 void				ft_perror(const char *str, int status);
 void				ft_exiterror(const char *str, int status);
+int					ft_strfind(const char *s, int start, int c);
 
 #endif

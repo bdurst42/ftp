@@ -32,7 +32,7 @@ SRC_IO =		ft_fputchar.c \
 				ft_putstr.c \
 				gnl.c
 SRC_LIST =		ft_create_node.c \
-			ft_clear_list.c \
+				ft_clear_list.c \
 				ft_node_push_back.c \
 				ft_node_push_front.c \
 				ft_node_push_after.c \
@@ -84,7 +84,8 @@ SRC_STRING =	ft_atoi.c \
 				ft_strsub.c \
 				ft_perror.c \
 				ft_strtrim.c \
-				ft_exiterror.c
+				ft_exiterror.c \
+				ft_strfind.c
 
 OBJ_ASCII =		$(patsubst %.c, $(DIR_OBJ)%.o, $(SRC_ASCII))
 OBJ_IO =		$(patsubst %.c, $(DIR_OBJ)%.o, $(SRC_IO))

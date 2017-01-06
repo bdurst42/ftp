@@ -6,13 +6,13 @@
 /*   By: bdurst <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/17 16:59:21 by bdurst            #+#    #+#             */
-/*   Updated: 2016/12/17 18:40:31 by bdurst           ###   ########.fr       */
+/*   Updated: 2017/01/06 14:47:32 by bdurst           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ftp.h"
 
-char			**ftp_list_to_tabstr(t_list *list)
+char		**ftp_list_to_tabstr(t_list *list)
 {
 	t_list		*tmp;
 	char		**args;
@@ -33,15 +33,15 @@ char			**ftp_list_to_tabstr(t_list *list)
 	return (args);
 }
 
-t_list	*ftp_tabstr_to_list(char **args)
+t_list		*ftp_tabstr_to_list(char **args)
 {
 	t_list	*list;
-	t_arg		*arg;
+	t_arg	*arg;
 	int		i;
 
 	i = -1;
 	list = NULL;
-	while(args[++i])
+	while (args[++i])
 	{
 		if (!(arg = (t_arg*)malloc(sizeof(t_arg))))
 			ftp_error(NULL, "ERROR: Malloc failure !", 0);
@@ -88,7 +88,7 @@ static int	ftp_if_dot(char **current_path, char *path, int i)
 	return (j);
 }
 
-char			*ftp_check_path(char *o_p, char *path)
+char		*ftp_check_path(char *o_p, char *path)
 {
 	int		i;
 	int		j;
@@ -105,8 +105,7 @@ char			*ftp_check_path(char *o_p, char *path)
 		j = i;
 		if (path[j] && path[j++] != '.')
 		{
-			while (path[j] && path[j] != '/')
-				++j;
+			j = ft_strfind(path, j, '/');
 			ftp_free_strjoin(ft_strsub(path, i - 1, j - i + 1), &c_p, 0);
 		}
 		else

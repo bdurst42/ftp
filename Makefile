@@ -17,12 +17,14 @@ MAIN1 = server.c
 MAIN2 = client.c
 
 FILES = package.c \
-		manage_file.c \
+		send_files.c \
+		get_files.c \
 		check.c \
 		nmatch.c \
 		cmd.c \
 		dir.c \
-		args.c
+		args.c \
+		wildcard.c
 
 OBJS1 = $(patsubst %.c, $(DIR_OBJ)%.o, $(FILES)) $(patsubst %.c, $(DIR_OBJ)%.o, $(MAIN1))
 

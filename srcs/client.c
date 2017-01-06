@@ -1,8 +1,20 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   client.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: bdurst <marvin@42.fr>                      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2017/01/06 15:57:22 by bdurst            #+#    #+#             */
+/*   Updated: 2017/01/06 15:57:31 by bdurst           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "ftp.h"
 
 static int	ftp_create_client(char *addr, char *port)
 {
-	int					sock;
+	int				sock;
 	struct addrinfo	info;
 	struct addrinfo	*res;
 
@@ -22,13 +34,13 @@ static int	ftp_create_client(char *addr, char *port)
 		ftp_error(NULL, "ERROR: connect failure !\n", 0);
 	}
 	free(res);
-	return (sock);	
+	return (sock);
 }
 
 static char	*ftp_get_stdin(int sock)
 {
 	ssize_t	ret;
-	char		*line;
+	char	*line;
 
 	ft_putstr("\033[0;34mftp\033[0m \033[0;32m->\033[0m ");
 	if ((ret = gnl(0, &line) > 0))
@@ -44,10 +56,11 @@ static void	ftp_parse_cmd(char *cmd, int sock)
 
 	if (!ft_strncmp(cmd, "put ", 4))
 	{
-		if ((list = ftp_get_args(ftp_tabstr_to_list(ft_strsplit(cmd, ' ')), 0, NULL)))
+		if ((list = ftp_get_args(ftp_tabstr_to_list(ft_strsplit(cmd, ' ')),
+			0, NULL)))
 		{
 			ftp_send_package(cmd, sock, 0, -1);
-			ftp_manage_send_cmd(cmd, list->next, sock, 1 +  F_CLIENT);
+			ftp_manage_send_cmd(cmd, list->next, sock, 1 + F_CLIENT);
 		}
 	}
 	else
@@ -67,7 +80,8 @@ static char	ftp_ret_cmd(char *cmd, int sock)
 		ftp_get_file(NULL, sock, 1);
 	else if (!ft_strncmp(cmd, "get ", 4))
 	{
-		if ((list = ftp_get_args(ftp_tabstr_to_list(ft_strsplit(cmd, ' ')), 0, NULL)))
+		if ((list = ftp_get_args(ftp_tabstr_to_list(ft_strsplit(cmd, ' ')),
+			0, NULL)))
 			ftp_manage_get_cmd(list->next, sock, 1);
 	}
 	else
@@ -77,7 +91,7 @@ static char	ftp_ret_cmd(char *cmd, int sock)
 
 int			main(int ac, char *av[])
 {
-	int		sock;
+	int			sock;
 	char		*cmd;
 	t_header	header;
 
@@ -87,11 +101,12 @@ int			main(int ac, char *av[])
 	while (1)
 	{
 		header.flag = 2;
-		while (header.flag & F_CONTINUE && (cmd = ftp_get_package(sock, &header)))
+		while (header.flag & F_CONTINUE &&
+				(cmd = ftp_get_package(sock, &header)))
 			if (!(ftp_ret_cmd(cmd, sock)))
 				return (0);
 		while (!(cmd = ftp_get_stdin(sock)) || !cmd[0])
-				  ;
+			;
 		ftp_parse_cmd(cmd, sock);
 	}
 	close(sock);
