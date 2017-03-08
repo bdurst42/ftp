@@ -97,6 +97,7 @@ char		ftp_is_cmd(char *cmd, int c_sock, char *path)
 {
 	t_list	*list;
 
+	ft_putendl("SERVER");
 	if (!cmd || cmd[0] == '\0' || !ft_strcmp(cmd, "quit"))
 	{
 		ftp_send_package("quit", c_sock, 0, -1);

@@ -12,6 +12,8 @@
 
 #include "ftp.h"
 
+volatile int	g_sock = -1;
+
 static int	ftp_create_client(char *addr, char *port)
 {
 	int				sock;
@@ -56,6 +58,7 @@ static void	ftp_parse_cmd(char *cmd, int sock)
 
 	if (!ft_strncmp(cmd, "put ", 4))
 	{
+		ft_putendl("CLIENT");
 		if ((list = ftp_get_args(ftp_tabstr_to_list(ft_strsplit(cmd, ' ')),
 			0, NULL)))
 		{
@@ -80,6 +83,7 @@ static char	ftp_ret_cmd(char *cmd, int sock)
 		ftp_get_file(NULL, sock, 1);
 	else if (!ft_strncmp(cmd, "get ", 4))
 	{
+		ft_putendl("CLIENT");
 		if ((list = ftp_get_args(ftp_tabstr_to_list(ft_strsplit(cmd, ' ')),
 			0, NULL)))
 			ftp_manage_get_cmd(list->next, sock, 1);
@@ -89,26 +93,34 @@ static char	ftp_ret_cmd(char *cmd, int sock)
 	return (1);
 }
 
+static void	sigsegv_handle(int n)
+{
+	(void)n;
+	close(g_sock);
+	exit(0);
+}
+
 int			main(int ac, char *av[])
 {
-	int			sock;
 	char		*cmd;
 	t_header	header;
 
 	if (ac != 3)
 		ftp_error("Usage: %s <addr> <port>\n", av[0], 0);
-	sock = ftp_create_client(av[1], av[2]);
+	if ((g_sock = ftp_create_client(av[1], av[2])) == -1)
+		return (-1);
+	signal(SIGINT, sigsegv_handle);
 	while (1)
 	{
 		header.flag = 2;
 		while (header.flag & F_CONTINUE &&
-				(cmd = ftp_get_package(sock, &header)))
-			if (!(ftp_ret_cmd(cmd, sock)))
+				(cmd = ftp_get_package(g_sock, &header)))
+			if (!(ftp_ret_cmd(cmd, g_sock)))
 				return (0);
-		while (!(cmd = ftp_get_stdin(sock)) || !cmd[0])
+		while (!(cmd = ftp_get_stdin(g_sock)) || !cmd[0])
 			;
-		ftp_parse_cmd(cmd, sock);
+		ftp_parse_cmd(cmd, g_sock);
 	}
-	close(sock);
+	close(g_sock);
 	return (0);
 }

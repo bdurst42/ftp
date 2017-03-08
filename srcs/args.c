@@ -69,5 +69,11 @@ t_list		*ftp_get_args(t_list *args, char opt, char *path)
 	}
 	if (last.base_arg && last.list_size == ft_list_size(list))
 		ft_node_push_back(&list, last.base_arg);
+	t_list *tmp = list;
+	while (tmp)
+	{
+		ft_putendl((char*)tmp->data);
+		tmp = tmp->next;
+	}
 	return (list);
 }
