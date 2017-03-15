@@ -50,8 +50,6 @@ void			ftp_get_file(char *file, int sock, char client)
 	while (((b = ftp_get_package(sock, &h)) || b) && h.flag & F_FILE_NO_END)
 		if (b)
 		{
-				  ft_putstr("filename = ");
-				  ft_putendl(file);
 			if (h.flag & F_CREATE_FILE)
 				write(fd, b, h.nb_bytes);
 			else
