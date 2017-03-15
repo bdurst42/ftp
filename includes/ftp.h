@@ -83,6 +83,6 @@ char			ftp_rmdir(char *dir_name);
 
 void			ftp_manage_get_cmd(t_list *list, int sock, char client);
 void			ftp_manage_send_cmd(char *cmd, t_list *list,
-				int sock, char flag);
+				int sock, char flag, char *real_path);
 
 #endif

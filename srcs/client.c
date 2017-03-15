@@ -58,12 +58,11 @@ static void	ftp_parse_cmd(char *cmd, int sock)
 
 	if (!ft_strncmp(cmd, "put ", 4))
 	{
-		ft_putendl("CLIENT");
 		if ((list = ftp_get_args(ftp_tabstr_to_list(ft_strsplit(cmd, ' ')),
 			0, NULL)))
 		{
 			ftp_send_package(cmd, sock, 0, -1);
-			ftp_manage_send_cmd(cmd, list->next, sock, 1 + F_CLIENT);
+			ftp_manage_send_cmd(cmd, list->next, sock, 1 + F_CLIENT, NULL);
 		}
 	}
 	else
@@ -83,7 +82,6 @@ static char	ftp_ret_cmd(char *cmd, int sock)
 		ftp_get_file(NULL, sock, 1);
 	else if (!ft_strncmp(cmd, "get ", 4))
 	{
-		ft_putendl("CLIENT");
 		if ((list = ftp_get_args(ftp_tabstr_to_list(ft_strsplit(cmd, ' ')),
 			0, NULL)))
 			ftp_manage_get_cmd(list->next, sock, 1);

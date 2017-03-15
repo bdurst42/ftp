@@ -17,7 +17,7 @@ int			ftp_find_last_directory(char *path)
 	int i;
 
 	i = ft_strlen(path) - 1;
-	while (i >= 0 && path[i] != '/')
+	while (i > 0 && path[i] != '/')
 		--i;
 	return (i);
 }
@@ -60,7 +60,7 @@ t_list		*ftp_get_args(t_list *args, char opt, char *path)
 	{
 		arg = ((t_arg*)args->data)->str;
 		if (!list || (!path && !ft_strchr(arg, '*')))
-			ft_node_push_back(&list, arg + ftp_find_last_directory(arg));
+			ft_node_push_back(&list, arg);
 		else if (!opt || !last.is_opt || arg[0] != '-')
 			ftp_manage_sf(&args, path, &list, &last);
 		else
@@ -69,11 +69,11 @@ t_list		*ftp_get_args(t_list *args, char opt, char *path)
 	}
 	if (last.base_arg && last.list_size == ft_list_size(list))
 		ft_node_push_back(&list, last.base_arg);
-	t_list *tmp = list;
+	/*t_list *tmp = list;
 	while (tmp)
 	{
 		ft_putendl((char*)tmp->data);
 		tmp = tmp->next;
-	}
+	}*/
 	return (list);
 }

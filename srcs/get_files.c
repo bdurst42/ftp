@@ -50,6 +50,8 @@ void			ftp_get_file(char *file, int sock, char client)
 	while (((b = ftp_get_package(sock, &h)) || b) && h.flag & F_FILE_NO_END)
 		if (b)
 		{
+				  ft_putstr("filename = ");
+				  ft_putendl(file);
 			if (h.flag & F_CREATE_FILE)
 				write(fd, b, h.nb_bytes);
 			else
@@ -75,7 +77,7 @@ void			ftp_manage_get_cmd(t_list *list, int sock, char client)
 				if (ftp_mkdir(cmd + 6) == -1)
 				{
 					if (client)
-						ft_putstr(ft_strjoin("ERROR: Can't create ",
+						ft_putendl(ft_strjoin("ERROR: Can't create ",
 									cmd + 6));
 					else
 						ftp_send_package(ft_strjoin("ERROR: Can't create ",
@@ -84,6 +86,8 @@ void			ftp_manage_get_cmd(t_list *list, int sock, char client)
 			}
 			else if (!ft_strncmp(cmd, "mkfile ", 7))
 				ftp_get_file(cmd + 7, sock, client);
+			else
+				ft_putendl(cmd);
 		}
 	}
 }

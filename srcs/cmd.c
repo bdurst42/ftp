@@ -97,7 +97,6 @@ char		ftp_is_cmd(char *cmd, int c_sock, char *path)
 {
 	t_list	*list;
 
-	ft_putendl("SERVER");
 	if (!cmd || cmd[0] == '\0' || !ft_strcmp(cmd, "quit"))
 	{
 		ftp_send_package("quit", c_sock, 0, -1);
@@ -110,7 +109,7 @@ char		ftp_is_cmd(char *cmd, int c_sock, char *path)
 	ftp_get_args(ftp_tabstr_to_list(ft_strsplit(cmd, ' ')), 0, path)))
 	{
 		ftp_send_package(cmd, c_sock, 0, -1);
-		ftp_manage_send_cmd(cmd, list->next, c_sock, 1);
+		ftp_manage_send_cmd(cmd, list->next, c_sock, 1, NULL);
 	}
 	else if (!ft_strncmp(cmd, "put ", 4) && (list =
 	ftp_get_args(ftp_tabstr_to_list(ft_strsplit(cmd, ' ')), 0, NULL)))

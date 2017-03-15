@@ -60,7 +60,7 @@ static void	sigsegv_handle(int n)
 	if (g_c_sock != -1)
 		close(g_c_sock);
 	close(g_sock);
-	exit(0);
+	exit(n);
 }
 
 int			main(int ac, char *av[])
