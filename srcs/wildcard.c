@@ -6,7 +6,7 @@
 /*   By: bdurst <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/06 17:38:05 by bdurst            #+#    #+#             */
-/*   Updated: 2017/01/06 18:07:26 by bdurst           ###   ########.fr       */
+/*   Updated: 2017/03/16 01:49:56 by bdurst           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,7 @@ void		ftp_wildcards(t_list **args, t_list **list, char *path)
 	i = -1;
 	tmp = *args;
 	arg = ((t_arg*)tmp->data)->str;
-	if ((pos = ftp_find_last_directory(arg)) == -1)
+	if (!(pos = ftp_find_last_directory(arg)) && arg[0] != '/')
 		ftp_manage_stars(ft_strjoin(ft_strjoin(getcwd(NULL, 0), "/"), arg),
 		list, 0);
 	else

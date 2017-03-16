@@ -6,7 +6,7 @@
 /*   By: bdurst <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/06 16:24:10 by bdurst            #+#    #+#             */
-/*   Updated: 2017/01/06 17:54:37 by bdurst           ###   ########.fr       */
+/*   Updated: 2017/03/16 01:50:36 by bdurst           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,6 @@ t_list		*ftp_get_args(t_list *args, char opt, char *path)
 	while (args)
 	{
 		arg = ((t_arg*)args->data)->str;
-		ft_putendl(path);
 		if (!list || (!path && !ft_strchr(arg, '*')))
 			ft_node_push_back(&list, arg);
 		else if (!opt || !last.is_opt || arg[0] != '-')
