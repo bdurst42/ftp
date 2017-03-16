@@ -6,7 +6,7 @@
 /*   By: bdurst <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/06 18:10:44 by bdurst            #+#    #+#             */
-/*   Updated: 2017/01/06 18:59:24 by bdurst           ###   ########.fr       */
+/*   Updated: 2017/03/16 02:48:47 by bdurst           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,8 +63,8 @@ static void	ftp_manage_dir(t_list *list, char *path, int sock, char flag, char *
 {
 	t_list	*n;
 
-	if ((flag & F_CLIENT && !(n = ftp_get_sf_in_dir((char*)list->data, -1))) ||
-	(!(flag & F_CLIENT) && !(n = ftp_get_sf_in_dir((char*)list->data, sock))))
+	if ((flag & F_CLIENT && (n = ftp_get_sf_in_dir((char*)list->data, -1)) == (void*)-1) ||
+	(!(flag & F_CLIENT) && (n = ftp_get_sf_in_dir((char*)list->data, sock)) == (void*)-1))
 	{
 		ftp_send_package("", sock, 2, -1);
 		return ;

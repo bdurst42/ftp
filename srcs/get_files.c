@@ -6,7 +6,7 @@
 /*   By: bdurst <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/06 18:10:31 by bdurst            #+#    #+#             */
-/*   Updated: 2017/01/06 18:22:47 by bdurst           ###   ########.fr       */
+/*   Updated: 2017/03/16 02:48:20 by bdurst           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,8 @@ t_list			*ftp_get_sf_in_dir(char *dir_name, int sock)
 				ent->d_name));
 		closedir(dir);
 	}
+	else
+		file = (void*)-1;
 	return (file);
 }
 
