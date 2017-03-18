@@ -47,8 +47,7 @@ static void	ftp_ls(char **args, int c_sock)
 	}
 }
 
-static void	ftp_manage_dir(char *cmd, int c_sock, char del,
-							char (*f)(char *dir_name))
+static void	ftp_manage_dir(char *cmd, int c_sock, char *path, char del)
 {
 	int		i;
 	char	**args;
@@ -58,8 +57,18 @@ static void	ftp_manage_dir(char *cmd, int c_sock, char del,
 	msg = NULL;
 	i = 0;
 	while (args[++i])
-		if (f(args[i]) == -1)
-			msg = ft_strjoin(ft_strjoin(msg, args[i]), " ");
+	{
+		if (del)
+		{
+			if (ftp_rmdir(ftp_check_path(path, args[i])) == -1)
+				msg = ft_strjoin(ft_strjoin(msg, args[i]), " ");
+		}
+		else
+		{
+			if (ftp_mkdir(ftp_check_path(path, args[i])) == -1)
+				msg = ft_strjoin(ft_strjoin(msg, args[i]), " ");
+		}
+	}
 	if (!msg)
 	{
 		if (del)
@@ -85,9 +94,9 @@ static char	ftp_other_cmds(char *cmd, int c_sock, char *path)
 		ftp_ls(ftp_list_to_tabstr(ftp_get_args(ftp_tabstr_to_list(
 		ft_strsplit(cmd, ' ')), 1, path)), c_sock);
 	else if (!ft_strncmp(cmd, "mkdir ", 6))
-		ftp_manage_dir(cmd, c_sock, 0, &ftp_mkdir);
+		ftp_manage_dir(cmd, c_sock, path, 0);
 	else if (!ft_strncmp(cmd, "rmdir ", 6))
-		ftp_manage_dir(cmd, c_sock, 1, &ftp_rmdir);
+		ftp_manage_dir(cmd, c_sock, path, 1);
 	else
 		ftp_send_package("Unknow command !", c_sock, 0, -1);
 	return (1);

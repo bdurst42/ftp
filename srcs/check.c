@@ -45,6 +45,8 @@ t_list		*ftp_tabstr_to_list(char **args)
 	{
 		if (!(arg = (t_arg*)malloc(sizeof(t_arg))))
 			ftp_error(NULL, "ERROR: Malloc failure !", 0);
+		if (args[i][ft_strlen(args[i]) - 1] == '/')
+			args[i][ft_strlen(args[i]) - 1] = 0;
 		arg->str = ft_strtrim(args[i]);
 		arg->base = 1;
 		ft_node_push_back(&list, arg);
@@ -95,9 +97,13 @@ char		*ftp_check_path(char *o_p, char *p)
 	char	*c_p;
 
 	c_p = NULL;
-	if (ft_strstr(p, o_p))
-		p = ft_strsub(p, ft_strlen(o_p), ft_strlen(p) - ft_strlen(o_p));
-	//c_p = ft_strdup(ft_strstr(getcwd(NULL, 0), o_p) + ft_strlen(o_p));
+	if (ft_strncmp(p, o_p, ft_strlen(o_p)))
+	{
+			  if (p[0] != '/')
+						 ftp_free_strjoin("/", &p, 1);
+			  ftp_free_strjoin(getcwd(NULL, 0), &p, 1);
+	}
+	p = ft_strsub(p, ft_strlen(o_p), ft_strlen(p) - ft_strlen(o_p));
 	if (p && p[0] != '/')
 		ftp_free_strjoin("/", &p, 1);
 	i = -1;

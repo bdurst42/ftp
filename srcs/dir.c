@@ -16,6 +16,8 @@ char	ftp_rmdir(char *dir_name)
 {
 	struct stat st;
 
+	if (!ft_strcmp(dir_name, getcwd(NULL, 0)))
+		return (-1);
 	if (stat(dir_name, &st) != -1)
 	{
 		if (rmdir(dir_name) == -1)
@@ -30,9 +32,9 @@ char	ftp_mkdir(char *dir_path)
 {
 	struct stat st;
 	int			i;
-	char		*dir_name;
+	char			*dir_name;
 
-	i = 0;
+	i = 1;
 	while (dir_path[i])
 	{
 		while (dir_path[i] && dir_path[i] != '/')
