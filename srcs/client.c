@@ -39,19 +39,6 @@ static int	ftp_create_client(char *addr, char *port)
 	return (sock);
 }
 
-static char	*ftp_get_stdin(int sock)
-{
-	ssize_t	ret;
-	char	*line;
-
-	ft_putstr("\033[0;34mftp\033[0m \033[0;32m->\033[0m ");
-	if ((ret = gnl(0, &line) > 0))
-		return (ft_strtrim(line));
-	else if (ret == -1)
-		ftp_error(NULL, "ERROR: gnl failure\n", sock);
-	return (NULL);
-}
-
 static void	ftp_parse_cmd(char *cmd, int sock)
 {
 	t_list	*list;

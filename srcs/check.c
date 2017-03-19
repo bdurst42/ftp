@@ -54,7 +54,7 @@ t_list		*ftp_tabstr_to_list(char **args)
 	return (list);
 }
 
-static void	ftp_free_strjoin(char *s1, char **s2, char c)
+static int	ftp_free_strjoin(char *s1, char **s2, char c)
 {
 	char	*tmp;
 
@@ -65,6 +65,7 @@ static void	ftp_free_strjoin(char *s1, char **s2, char c)
 		*s2 = ft_strjoin(*s2, s1);
 	if (tmp)
 		free(tmp);
+	return (1);
 }
 
 static int	ftp_if_dot(char **current_path, char *path, int i)
@@ -97,12 +98,10 @@ char		*ftp_check_path(char *o_p, char *p)
 	char	*c_p;
 
 	c_p = NULL;
-	if (ft_strncmp(p, o_p, ft_strlen(o_p)))
-	{
-			  if (p[0] != '/')
-						 ftp_free_strjoin("/", &p, 1);
+	if (ft_strncmp(p, o_p, ft_strlen(o_p)) && p[0] != '/' && ftp_free_strjoin("/", &p, 1))
 			  ftp_free_strjoin(getcwd(NULL, 0), &p, 1);
-	}
+	else if (ft_strncmp(p, o_p, ft_strlen(o_p)))
+		ftp_free_strjoin(getcwd(NULL, 0), &p, 1);
 	p = ft_strsub(p, ft_strlen(o_p), ft_strlen(p) - ft_strlen(o_p));
 	if (p && p[0] != '/')
 		ftp_free_strjoin("/", &p, 1);

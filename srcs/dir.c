@@ -74,3 +74,18 @@ DIR		*ftp_opendir(char *dir_name, int c_sock)
 	}
 	return (dir);
 }
+
+char			*call_dir_function(char del, char *path, char *arg, char *msg)
+{
+	if (del)
+	{
+		if (ftp_rmdir(ftp_check_path(path, arg)) == -1)
+			msg = ft_strjoin(ft_strjoin(msg, arg), " ");
+	}
+	else
+	{
+	if (ftp_mkdir(ftp_check_path(path, arg)) == -1)
+		msg = ft_strjoin(ft_strjoin(msg, arg), " ");
+	}
+	return (msg);
+}

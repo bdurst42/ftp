@@ -69,16 +69,14 @@ void			ftp_manage_get_cmd(t_list *list, int sock, char client)
 	header.flag |= F_CONTINUE;
 	while (list && header.flag & F_CONTINUE)
 	{
-		cmd = ftp_get_package(sock, &header);
-		if (cmd)
+		if ((cmd = ftp_get_package(sock, &header)))
 		{
 			if (!ft_strncmp(cmd, "mkdir ", 6))
 			{
 				if (ftp_mkdir(cmd + 6) == -1)
 				{
 					if (client)
-						ft_putendl(ft_strjoin("ERROR: Can't create ",
-									cmd + 6));
+						ft_putendl(ft_strjoin("ERROR: Can't create ", cmd + 6));
 					else
 						ftp_send_package(ft_strjoin("ERROR: Can't create ",
 									cmd + 6), sock, 2, -1);

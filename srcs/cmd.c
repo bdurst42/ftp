@@ -57,18 +57,7 @@ static void	ftp_manage_dir(char *cmd, int c_sock, char *path, char del)
 	msg = NULL;
 	i = 0;
 	while (args[++i])
-	{
-		if (del)
-		{
-			if (ftp_rmdir(ftp_check_path(path, args[i])) == -1)
-				msg = ft_strjoin(ft_strjoin(msg, args[i]), " ");
-		}
-		else
-		{
-			if (ftp_mkdir(ftp_check_path(path, args[i])) == -1)
-				msg = ft_strjoin(ft_strjoin(msg, args[i]), " ");
-		}
-	}
+		msg = call_dir_function(del, path, args[i], msg);
 	if (!msg)
 	{
 		if (del)

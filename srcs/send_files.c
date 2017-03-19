@@ -12,43 +12,6 @@
 
 #include "ftp.h"
 
-void		ftp_send_file(char *file, int sock, char flag)
-{
-	int		fd;
-	char	*buff;
-	ssize_t	ret;
-	int		len;
-
-	if ((fd = open(file, O_RDONLY)) == -1)
-	{
-		if (flag & F_CLIENT)
-			printf("ERROR: open failure -> %s\n", file);
-		else
-			ftp_send_package(ft_strjoin("ERROR: open failure -> ", file),
-			sock, 2, -1);
-		return ;
-	}
-	else
-	{
-		len = lseek(fd, 0, SEEK_END);
-		lseek(fd, 0, SEEK_SET);
-		if (!(buff = (char*)malloc(sizeof(char) * (len + 1))))
-		{
-			ft_putendl("malloc failure");
-			exit(-1);
-		}
-		while ((ret = read(fd, buff, len)) > 0)
-		{
-			buff[ret] = '\0';
-			flag |= F_FILE_NO_END;
-			ftp_send_package(buff, sock, flag, ret);
-		}
-		free(buff);
-		close(fd);
-		ftp_send_package("", sock, 2, -1);
-	}
-}
-
 static void	ftp_manage_file(char *cmd, char *path, int sock, char flag, char *real_path)
 {
 	if (cmd)
@@ -96,30 +59,30 @@ static void	ftp_manage_sf(char *cmd, t_list **list, int sock, char flag, char *r
 	}
 }
 
-void		ftp_manage_send_cmd(char *cmd, t_list *list, int sock, char flag, char *real_path)
+void		ftp_manage_send_cmd(char *cmd, t_list *list, int sock, char flag, char *r_p)
 {
-	int	with_path;
+	int	w_p;
 
 	flag |= F_CONTINUE;
 	while (list)
 	{
-			  with_path = 1;
+		w_p = 1;
 		if (cmd)
 		{
-			if (ft_strstr((char*)list->data, getcwd(NULL, 0)))
+			if (ft_strstr(PATH, getcwd(NULL, 0)))
 			{
-					  if (!ftp_find_last_directory((char*)list->data + ft_strlen(getcwd(NULL, 0)) + 1) && ((char*)list->data + ft_strlen(getcwd(NULL, 0)) + 1)[0] != '/')
-								 with_path = 0;
-				real_path = ft_strsub((char*)list->data + ft_strlen(getcwd(NULL, 0)) + 1, 0, ftp_find_last_directory((char*)list->data + ft_strlen(getcwd(NULL, 0)) + 1) + with_path);
+					  if (!ftp_find_last_directory(ARG) && (ARG)[0] != '/')
+								 w_p = 0;
+				r_p = ft_strsub(ARG, 0, ftp_find_last_directory(ARG) + w_p);
 			}
 			else
 			{
-				if (!ftp_find_last_directory((char*)list->data) && ((char*)list->data)[0] != '/')
-					with_path = 0;
-				real_path = ft_strsub((char*)list->data, 0, ftp_find_last_directory((char*)list->data) + with_path);
+				if (!ftp_find_last_directory(PATH) && (PATH)[0] != '/')
+					w_p = 0;
+				r_p = ft_strsub(PATH, 0, ftp_find_last_directory(PATH) + w_p);
 			}
 		}
-		ftp_manage_sf(cmd, &list, sock, flag, real_path);
+		ftp_manage_sf(cmd, &list, sock, flag, r_p);
 		list = list->next;
 	}
 	if (cmd)

@@ -68,10 +68,10 @@ static char	*ftp_get_dir_path(char *path, char *arg, int pos)
 void		ftp_wildcards(t_list **args, t_list **list, char *path)
 {
 	int		pos;
-	char	*dir_path;
+	char		*dir_path;
 	int		i;
 	t_list	*tmp;
-	char	*arg;
+	char		*arg;
 
 	i = -1;
 	tmp = *args;

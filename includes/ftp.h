@@ -30,9 +30,9 @@
 # define F_FILE_NO_END	(1 << 3)
 
 # define JOIN ft_strjoin(ft_strjoin(dir_path, "/"), ent->d_name)
-
+# define PATH (char*)list->data 
+# define ARG PATH + ft_strlen(getcwd(NULL, 0)) + 1
 # define FILE_BUFFER "tmp"
-# define MAX_PACKAGE_SIZE 65000
 
 typedef struct	s_header
 {
@@ -74,12 +74,14 @@ t_list			*ftp_tabstr_to_list(char **arg);
 void			ftp_wildcards(t_list **args, t_list **list, char *path);
 
 int				nmatch(char *s1, char *s2);
+char				*ftp_get_stdin(int sock);
 
 DIR				*ftp_opendir(char *dir_name, int c_sock);
 int				ftp_is_dir(char *dir);
 int				ftp_is_file(char *path);
 char			ftp_mkdir(char *dir_name);
 char			ftp_rmdir(char *dir_name);
+char			*call_dir_function(char del, char *path, char *arg, char *msg);
 
 void			ftp_manage_get_cmd(t_list *list, int sock, char client);
 void			ftp_manage_send_cmd(char *cmd, t_list *list,

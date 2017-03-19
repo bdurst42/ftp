@@ -28,7 +28,7 @@ char	*ftp_get_package(int sock, t_header *header)
 
 	if ((ret = recv(sock, header, sizeof(t_header), 0)) > 0)
 	{
-		if (!(buff = (char*)malloc(sizeof(char) * (MAX_PACKAGE_SIZE + 1))))
+		if (!(buff = (char*)malloc(sizeof(char) * (header->nb_bytes + 1))))
 			ftp_error(NULL, "ERROR: malloc failure\n", 0);
 		if ((ret = recv(sock, buff, header->nb_bytes, 0)) > 0)
 		{
