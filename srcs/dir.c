@@ -6,7 +6,7 @@
 /*   By: bdurst <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/06 16:13:15 by bdurst            #+#    #+#             */
-/*   Updated: 2017/01/06 16:15:32 by bdurst           ###   ########.fr       */
+/*   Updated: 2017/03/20 12:58:03 by bdurst           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ char	ftp_mkdir(char *dir_path)
 {
 	struct stat st;
 	int			i;
-	char			*dir_name;
+	char		*dir_name;
 
 	i = 1;
 	while (dir_path[i])
@@ -75,7 +75,7 @@ DIR		*ftp_opendir(char *dir_name, int c_sock)
 	return (dir);
 }
 
-char			*call_dir_function(char del, char *path, char *arg, char *msg)
+char	*call_dir_function(char del, char *path, char *arg, char *msg)
 {
 	if (del)
 	{
@@ -84,8 +84,8 @@ char			*call_dir_function(char del, char *path, char *arg, char *msg)
 	}
 	else
 	{
-	if (ftp_mkdir(ftp_check_path(path, arg)) == -1)
-		msg = ft_strjoin(ft_strjoin(msg, arg), " ");
+		if (ftp_mkdir(ftp_check_path(path, arg)) == -1)
+			msg = ft_strjoin(ft_strjoin(msg, arg), " ");
 	}
 	return (msg);
 }

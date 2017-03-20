@@ -6,7 +6,7 @@
 /*   By: bdurst <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/06 15:57:22 by bdurst            #+#    #+#             */
-/*   Updated: 2017/02/02 16:53:46 by bdurst           ###   ########.fr       */
+/*   Updated: 2017/03/20 13:23:22 by bdurst           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,14 +42,17 @@ static int	ftp_create_client(char *addr, char *port)
 static void	ftp_parse_cmd(char *cmd, int sock)
 {
 	t_list	*list;
+	t_tools	t;
 
 	if (!ft_strncmp(cmd, "put ", 4))
 	{
 		if ((list = ftp_get_args(ftp_tabstr_to_list(ft_strsplit(cmd, ' ')),
 			0, NULL)))
 		{
+			t.sock = sock;
+			t.flag = 1 + F_CLIENT;
 			ftp_send_package(cmd, sock, 0, -1);
-			ftp_manage_send_cmd(cmd, list->next, sock, 1 + F_CLIENT, NULL);
+			ftp_manage_send_cmd(cmd, list->next, t, NULL);
 		}
 	}
 	else

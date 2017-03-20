@@ -6,7 +6,7 @@
 /*   By: bdurst <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/06 15:58:40 by bdurst            #+#    #+#             */
-/*   Updated: 2017/01/06 16:11:49 by bdurst           ###   ########.fr       */
+/*   Updated: 2017/03/20 13:34:02 by bdurst           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,23 +94,23 @@ static char	ftp_other_cmds(char *cmd, int c_sock, char *path)
 char		ftp_is_cmd(char *cmd, int c_sock, char *path)
 {
 	t_list	*list;
+	t_tools	t;
 
 	if (!cmd || cmd[0] == '\0' || !ft_strcmp(cmd, "quit"))
 	{
 		ftp_send_package("quit", c_sock, 0, -1);
-		close(c_sock);
-		return (0);
+		return (close(c_sock));
 	}
 	else if (!ft_strncmp(cmd, "cd ", 3))
 		ftp_cd(ftp_check_path(path, ft_strtrim(cmd + 3)), c_sock);
-	else if (!ft_strncmp(cmd, "get ", 4) && (list =
-	ftp_get_args(ftp_tabstr_to_list(ft_strsplit(cmd, ' ')), 0, path)))
+	else if (!ft_strncmp(cmd, "get ", 4) && (list = LIST(path)))
 	{
+		t.sock = c_sock;
+		t.flag = 1;
 		ftp_send_package(cmd, c_sock, 0, -1);
-		ftp_manage_send_cmd(cmd, list->next, c_sock, 1, NULL);
+		ftp_manage_send_cmd(cmd, list->next, t, NULL);
 	}
-	else if (!ft_strncmp(cmd, "put ", 4) && (list =
-	ftp_get_args(ftp_tabstr_to_list(ft_strsplit(cmd, ' ')), 0, NULL)))
+	else if (!ft_strncmp(cmd, "put ", 4) && (list = LIST(NULL)))
 	{
 		ftp_manage_get_cmd(list->next, c_sock, 0);
 		ftp_send_package("", c_sock, 0, -1);

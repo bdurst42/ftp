@@ -6,7 +6,7 @@
 /*   By: bdurst <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/06 16:22:24 by bdurst            #+#    #+#             */
-/*   Updated: 2017/01/06 16:23:31 by bdurst           ###   ########.fr       */
+/*   Updated: 2017/03/20 13:05:34 by bdurst           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,15 +51,9 @@ void	ftp_send_package(char *str, int sock, char flag, long size)
 		header.nb_bytes = size;
 	header.flag = flag;
 	if ((send(sock, &header, sizeof(t_header), 0)) == -1)
-	{
-			  ft_putendl("FAILURE2");
 		ftp_error(NULL, "ERROR: send failure\n", sock);
-	}
 	if ((send(sock, str, header.nb_bytes, 0)) == -1)
-	{
-		ft_putendl("FAILURE2");
 		ftp_error(NULL, "ERROR: send failure\n", sock);
-	}
 }
 
 void	ftp_error(char *format_string, char *str, int sock)

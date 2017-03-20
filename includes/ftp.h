@@ -6,7 +6,7 @@
 /*   By: bdurst <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/06 19:00:00 by bdurst            #+#    #+#             */
-/*   Updated: 2017/02/02 15:27:00 by bdurst           ###   ########.fr       */
+/*   Updated: 2017/03/20 13:35:04 by bdurst           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,10 +29,18 @@
 # define F_CLIENT	(1 << 2)
 # define F_FILE_NO_END	(1 << 3)
 
+# define LIST(x) ftp_get_args(ftp_tabstr_to_list(ft_strsplit(cmd, ' ')), 0, x)
+# define IS_CLIENT t.flag & F_CLIENT
 # define JOIN ft_strjoin(ft_strjoin(dir_path, "/"), ent->d_name)
-# define PATH (char*)list->data 
+# define PATH (char*)list->data
 # define ARG PATH + ft_strlen(getcwd(NULL, 0)) + 1
 # define FILE_BUFFER "tmp"
+
+typedef struct	s_tools
+{
+	int			sock;
+	char		flag;
+}				t_tools;
 
 typedef struct	s_header
 {
@@ -74,7 +82,7 @@ t_list			*ftp_tabstr_to_list(char **arg);
 void			ftp_wildcards(t_list **args, t_list **list, char *path);
 
 int				nmatch(char *s1, char *s2);
-char				*ftp_get_stdin(int sock);
+char			*ftp_get_stdin(int sock);
 
 DIR				*ftp_opendir(char *dir_name, int c_sock);
 int				ftp_is_dir(char *dir);
@@ -85,6 +93,6 @@ char			*call_dir_function(char del, char *path, char *arg, char *msg);
 
 void			ftp_manage_get_cmd(t_list *list, int sock, char client);
 void			ftp_manage_send_cmd(char *cmd, t_list *list,
-				int sock, char flag, char *real_path);
+				t_tools t, char *real_path);
 
 #endif

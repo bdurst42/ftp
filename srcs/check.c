@@ -6,7 +6,7 @@
 /*   By: bdurst <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/17 16:59:21 by bdurst            #+#    #+#             */
-/*   Updated: 2017/03/16 01:49:32 by bdurst           ###   ########.fr       */
+/*   Updated: 2017/03/20 13:04:45 by bdurst           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,13 +98,12 @@ char		*ftp_check_path(char *o_p, char *p)
 	char	*c_p;
 
 	c_p = NULL;
-	if (ft_strncmp(p, o_p, ft_strlen(o_p)) && p[0] != '/' && ftp_free_strjoin("/", &p, 1))
-			  ftp_free_strjoin(getcwd(NULL, 0), &p, 1);
+	if (ft_strncmp(p, o_p, ft_strlen(o_p)) && p[0] != '/'
+		&& ftp_free_strjoin("/", &p, 1))
+		ftp_free_strjoin(getcwd(NULL, 0), &p, 1);
 	else if (ft_strncmp(p, o_p, ft_strlen(o_p)))
 		ftp_free_strjoin(getcwd(NULL, 0), &p, 1);
 	p = ft_strsub(p, ft_strlen(o_p), ft_strlen(p) - ft_strlen(o_p));
-	if (p && p[0] != '/')
-		ftp_free_strjoin("/", &p, 1);
 	i = -1;
 	while (p[++i])
 	{
