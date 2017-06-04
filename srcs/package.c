@@ -6,7 +6,7 @@
 /*   By: bdurst <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/06 16:22:24 by bdurst            #+#    #+#             */
-/*   Updated: 2017/03/20 13:05:34 by bdurst           ###   ########.fr       */
+/*   Updated: 2017/06/04 01:41:53 by bdurst           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,8 +26,15 @@ char	*ftp_get_package(int sock, t_header *header)
 	char	*buff;
 	ssize_t	ret;
 
+	ft_putendl("PACKAGE");
 	if ((ret = recv(sock, header, sizeof(t_header), 0)) > 0)
 	{
+	ft_putnbr(ret);
+	ft_putstr(" || ");
+	ft_putnbr(header->nb_bytes);
+	ft_putstr(" || ");
+	ft_putnbr(header->flag);
+	ft_putendl("WTF");
 		if (!(buff = (char*)malloc(sizeof(char) * (header->nb_bytes + 1))))
 			ftp_error(NULL, "ERROR: malloc failure\n", 0);
 		if ((ret = recv(sock, buff, header->nb_bytes, 0)) > 0)
@@ -38,6 +45,7 @@ char	*ftp_get_package(int sock, t_header *header)
 	}
 	else if (ret == -1)
 		ftp_error(NULL, "ERROR: recv failure\n", 0);
+	ft_putendl("OUT PACKAGE");
 	return (NULL);
 }
 
@@ -45,14 +53,25 @@ void	ftp_send_package(char *str, int sock, char flag, long size)
 {
 	t_header	header;
 
+	if (str)
+		ft_putendl(str);
 	if (size == -1)
+	{
 		header.nb_bytes = ft_strlen(str);
+		ft_putendl("---------------------------> size = -1");
+	}
 	else
 		header.nb_bytes = size;
+	ft_putnbr(header.nb_bytes);
+	ft_putendl(" _> nb bytes");
+	ft_putnbr(sizeof(t_header));
+	ft_putendl(" _> sizeof");
 	header.flag = flag;
+	ft_putnbr(header.flag);
+	ft_putendl(" === flag");
 	if ((send(sock, &header, sizeof(t_header), 0)) == -1)
 		ftp_error(NULL, "ERROR: send failure\n", sock);
-	if ((send(sock, str, header.nb_bytes, 0)) == -1)
+	if (header.nb_bytes && (send(sock, str, header.nb_bytes, 0)) == -1)
 		ftp_error(NULL, "ERROR: send failure\n", sock);
 }
 

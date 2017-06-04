@@ -6,7 +6,7 @@
 /*   By: bdurst <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/09/07 22:39:27 by bdurst            #+#    #+#             */
-/*   Updated: 2017/03/20 13:07:57 by bdurst           ###   ########.fr       */
+/*   Updated: 2017/06/04 01:25:03 by bdurst           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,26 +50,33 @@ static void	ftp_open_file(char *file, int sock, char flag)
 void		ftp_send_file(char *file, int sock, char flag)
 {
 	int		fd;
-	char	*buff;
+	char	buff[PACKAGE_SIZE + 1];
 	ssize_t	ret;
-	int		len;
+	long	len;
 
+	ft_putstr("file ==== ");
+	ft_putendl(file);
 	if ((fd = open(file, O_RDONLY)) == -1)
 		ftp_open_file(file, sock, flag);
 	else
 	{
 		len = lseek(fd, 0, SEEK_END);
 		lseek(fd, 0, SEEK_SET);
-		if (!(buff = (char*)malloc(sizeof(char) * (len + 1))))
-			ft_exiterror("malloc failure", -1);
-		while ((ret = read(fd, buff, len)) > 0)
+		while ((ret = read(fd, buff, PACKAGE_SIZE)) > 0 || len > 0)
 		{
+			ft_putnbr(len);
+			ft_putendl(" <--------------------------------------------------- len");
+			len -= PACKAGE_SIZE;
 			buff[ret] = '\0';
 			flag |= F_FILE_NO_END;
+			ft_putnbr(ret);
+			ft_putendl(" <-- ret send");
+			ft_putnbr(flag);
+			ft_putendl(" <-- flag");
 			ftp_send_package(buff, sock, flag, ret);
 		}
-		free(buff);
 		close(fd);
-		ftp_send_package("", sock, 2, -1);
+		ftp_send_package("", sock, 2, 0);
+		ft_putendl("FIRST");
 	}
 }

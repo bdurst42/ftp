@@ -6,7 +6,7 @@
 /*   By: bdurst <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/06 16:13:15 by bdurst            #+#    #+#             */
-/*   Updated: 2017/03/20 12:58:03 by bdurst           ###   ########.fr       */
+/*   Updated: 2017/06/03 18:22:11 by bdurst           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,8 +31,9 @@ char	ftp_rmdir(char *dir_name)
 char	ftp_mkdir(char *dir_path)
 {
 	struct stat st;
-	int			i;
+	size_t		i;
 	char		*dir_name;
+	int			ret;
 
 	i = 1;
 	while (dir_path[i])
@@ -40,11 +41,8 @@ char	ftp_mkdir(char *dir_path)
 		while (dir_path[i] && dir_path[i] != '/')
 			++i;
 		dir_name = ft_strsub(dir_path, 0, i);
-		if (stat(dir_name, &st) == -1)
-		{
-			if (mkdir(dir_name, 0777) == -1)
-				return (-1);
-		}
+		if (((ret = stat(dir_name, &st)) != -1 && i == ft_strlen(dir_path)) || (ret == -1 && mkdir(dir_name, 0777) == -1))
+			return (-1);
 		++i;
 	}
 	return (1);
@@ -80,12 +78,12 @@ char	*call_dir_function(char del, char *path, char *arg, char *msg)
 	if (del)
 	{
 		if (ftp_rmdir(ftp_check_path(path, arg)) == -1)
-			msg = ft_strjoin(ft_strjoin(msg, arg), " ");
+			msg = ft_strjoin(ft_strjoin(msg, arg + 1), " ");
 	}
 	else
 	{
 		if (ftp_mkdir(ftp_check_path(path, arg)) == -1)
-			msg = ft_strjoin(ft_strjoin(msg, arg), " ");
+			msg = ft_strjoin(ft_strjoin(msg, arg + 1), " ");
 	}
 	return (msg);
 }

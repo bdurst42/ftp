@@ -6,7 +6,7 @@
 /*   By: bdurst <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/06 15:58:40 by bdurst            #+#    #+#             */
-/*   Updated: 2017/03/20 13:34:02 by bdurst           ###   ########.fr       */
+/*   Updated: 2017/06/03 19:17:56 by bdurst           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,7 +112,9 @@ char		ftp_is_cmd(char *cmd, int c_sock, char *path)
 	}
 	else if (!ft_strncmp(cmd, "put ", 4) && (list = LIST(NULL)))
 	{
+		ft_putendl("ENTERRRRRRRRRRRRRRR");
 		ftp_manage_get_cmd(list->next, c_sock, 0);
+		ft_putendl("OUT");
 		ftp_send_package("", c_sock, 0, -1);
 	}
 	else

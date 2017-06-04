@@ -6,7 +6,7 @@
 /*   By: bdurst <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/06 18:10:31 by bdurst            #+#    #+#             */
-/*   Updated: 2017/03/16 02:48:20 by bdurst           ###   ########.fr       */
+/*   Updated: 2017/06/04 01:15:47 by bdurst           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@ void			ftp_get_file(char *file, int sock, char client)
 	char		*b;
 	int			fd;
 
+	ft_putendl("step1");
 	if (file)
 		if ((fd = open(file, O_WRONLY | O_CREAT | O_TRUNC, 0777)) == -1)
 		{
@@ -48,15 +49,20 @@ void			ftp_get_file(char *file, int sock, char client)
 				sock, 0, -1);
 			return ;
 		}
+	ft_putendl("step2");
 	h.flag |= F_FILE_NO_END;
-	while (((b = ftp_get_package(sock, &h)) || b) && h.flag & F_FILE_NO_END)
+	while (h.flag & F_FILE_NO_END && (b = ftp_get_package(sock, &h)))
 		if (b)
 		{
+	ft_putendl("step3");
 			if (h.flag & F_CREATE_FILE)
 				write(fd, b, h.nb_bytes);
 			else
 				ft_putstr(b);
+			free(b);
+	ft_putendl("step4");
 		}
+	ft_putendl("step5");
 	if (file)
 		close(fd);
 }

@@ -6,7 +6,7 @@
 /*   By: bdurst <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/06 18:10:44 by bdurst            #+#    #+#             */
-/*   Updated: 2017/03/20 13:28:23 by bdurst           ###   ########.fr       */
+/*   Updated: 2017/06/03 20:36:08 by bdurst           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,10 @@ static void	ftp_manage_sf(char *cmd, t_list **list, t_tools t, char *real_path)
 	if (ftp_is_dir((char*)(*list)->data))
 		ftp_manage_dir(*list, path, t, real_path);
 	else if (ftp_is_file((char*)(*list)->data))
+	{
+			ft_putendl("nounouk 2");
 		ftp_manage_file(cmd, path, t, real_path);
+	}
 	else
 	{
 		if (t.flag & F_CLIENT)
@@ -70,12 +73,14 @@ void		ftp_manage_send_cmd(char *cmd, t_list *list, t_tools t, char *r_p)
 		w_p = 1;
 		if (cmd && ft_strstr(PATH, getcwd(NULL, 0)))
 		{
+			ft_putendl("nounouk 0");
 			if (!ftp_find_last_directory(ARG) && (ARG)[0] != '/')
 				w_p = 0;
 			r_p = ft_strsub(ARG, 0, ftp_find_last_directory(ARG) + w_p);
 		}
 		else if (cmd)
 		{
+			ft_putendl("nounouk 1");
 			if (!ftp_find_last_directory(PATH) && (PATH)[0] != '/')
 				w_p = 0;
 			r_p = ft_strsub(PATH, 0, ftp_find_last_directory(PATH) + w_p);

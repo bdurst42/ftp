@@ -6,7 +6,7 @@
 /*   By: bdurst <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/06 19:00:00 by bdurst            #+#    #+#             */
-/*   Updated: 2017/03/20 13:35:04 by bdurst           ###   ########.fr       */
+/*   Updated: 2017/06/04 01:02:17 by bdurst           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@
 # define PATH (char*)list->data
 # define ARG PATH + ft_strlen(getcwd(NULL, 0)) + 1
 # define FILE_BUFFER "tmp"
+# define PACKAGE_SIZE 64000
 
 typedef struct	s_tools
 {
