@@ -6,7 +6,7 @@
 /*   By: bdurst <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/06 18:10:31 by bdurst            #+#    #+#             */
-/*   Updated: 2017/06/04 01:15:47 by bdurst           ###   ########.fr       */
+/*   Updated: 2017/06/05 02:19:55 by bdurst           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,32 +37,29 @@ void			ftp_get_file(char *file, int sock, char client)
 	t_header	h;
 	char		*b;
 	int			fd;
+	char		*to_free;
 
-	ft_putendl("step1");
 	if (file)
 		if ((fd = open(file, O_WRONLY | O_CREAT | O_TRUNC, 0777)) == -1)
 		{
+			to_free = ft_strjoin("ERROR: open failure -> ", file);
 			if (client)
-				printf("ERROR: open failure -> %s\n", file);
+				printf("%s\n", to_free);
 			else
-				ftp_send_package(ft_strjoin("ERROR: open failure -> ", file),
-				sock, 0, -1);
+				ftp_send_package(to_free, sock, 0, -1);
+			free(to_free);
 			return ;
 		}
-	ft_putendl("step2");
 	h.flag |= F_FILE_NO_END;
 	while (h.flag & F_FILE_NO_END && (b = ftp_get_package(sock, &h)))
 		if (b)
 		{
-	ft_putendl("step3");
 			if (h.flag & F_CREATE_FILE)
 				write(fd, b, h.nb_bytes);
 			else
 				ft_putstr(b);
 			free(b);
-	ft_putendl("step4");
 		}
-	ft_putendl("step5");
 	if (file)
 		close(fd);
 }

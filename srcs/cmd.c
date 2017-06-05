@@ -6,7 +6,7 @@
 /*   By: bdurst <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/06 15:58:40 by bdurst            #+#    #+#             */
-/*   Updated: 2017/06/03 19:17:56 by bdurst           ###   ########.fr       */
+/*   Updated: 2017/06/05 02:16:42 by bdurst           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,10 +68,11 @@ static void	ftp_manage_dir(char *cmd, int c_sock, char *path, char del)
 	else
 	{
 		if (del)
-			msg = ft_strjoin("ERROR: Can't delete ", msg);
+			ftp_free_strjoin("ERROR: Can't delete ", &msg, 1);
 		else
-			msg = ft_strjoin("ERROR: Can't create ", msg);
+			ftp_free_strjoin("ERROR: Can't create ", &msg, 1);
 	}
+	ft_free_tab(args);
 	ftp_send_package(msg, c_sock, 0, -1);
 }
 
@@ -102,7 +103,7 @@ char		ftp_is_cmd(char *cmd, int c_sock, char *path)
 		return (close(c_sock));
 	}
 	else if (!ft_strncmp(cmd, "cd ", 3))
-		ftp_cd(ftp_check_path(path, ft_strtrim(cmd + 3)), c_sock);
+		ftp_cd(ftp_check_path(path, ftp_free_strtrim(cmd + 3)), c_sock);
 	else if (!ft_strncmp(cmd, "get ", 4) && (list = LIST(path)))
 	{
 		t.sock = c_sock;

@@ -6,7 +6,7 @@
 /*   By: bdurst <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/17 16:59:21 by bdurst            #+#    #+#             */
-/*   Updated: 2017/03/20 13:04:45 by bdurst           ###   ########.fr       */
+/*   Updated: 2017/06/05 02:14:47 by bdurst           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 char		**ftp_list_to_tabstr(t_list *list)
 {
 	t_list		*tmp;
+	t_list		*to_free;
 	char		**args;
 	uint32_t	size;
 	uint32_t	i;
@@ -28,7 +29,10 @@ char		**ftp_list_to_tabstr(t_list *list)
 	while (tmp)
 	{
 		args[i++] = (char*)tmp->data;
+		free(tmp->data);
+		to_free = tmp;
 		tmp = tmp->next;
+		free(to_free);
 	}
 	return (args);
 }
@@ -51,10 +55,11 @@ t_list		*ftp_tabstr_to_list(char **args)
 		arg->base = 1;
 		ft_node_push_back(&list, arg);
 	}
+	ft_free_tab(args);
 	return (list);
 }
 
-static int	ftp_free_strjoin(char *s1, char **s2, char c)
+int			ftp_free_strjoin(char *s1, char **s2, char c)
 {
 	char	*tmp;
 
@@ -70,8 +75,9 @@ static int	ftp_free_strjoin(char *s1, char **s2, char c)
 
 static int	ftp_if_dot(char **current_path, char *path, int i)
 {
-	int	pos;
-	int	j;
+	int		pos;
+	int		j;
+	char	*to_free;
 
 	j = i;
 	while (path[j] == '.')
@@ -79,8 +85,12 @@ static int	ftp_if_dot(char **current_path, char *path, int i)
 		if (j++ != i)
 		{
 			if (*current_path && (pos = ftp_find_last_directory(*current_path)))
+			{
+				to_free = *current_path;
 				*current_path = ft_strsub(*current_path, 0,
 				ft_strlen(*current_path) - pos);
+				free(to_free);
+			}
 			else
 			{
 				free(*current_path);
@@ -97,13 +107,15 @@ char		*ftp_check_path(char *o_p, char *p)
 	int		j;
 	char	*c_p;
 
-	c_p = NULL;
 	if (ft_strncmp(p, o_p, ft_strlen(o_p)) && p[0] != '/'
 		&& ftp_free_strjoin("/", &p, 1))
 		ftp_free_strjoin(getcwd(NULL, 0), &p, 1);
 	else if (ft_strncmp(p, o_p, ft_strlen(o_p)))
 		ftp_free_strjoin(getcwd(NULL, 0), &p, 1);
+	c_p = p;
 	p = ft_strsub(p, ft_strlen(o_p), ft_strlen(p) - ft_strlen(o_p));
+	free(c_p);
+	c_p = NULL;
 	i = -1;
 	while (p[++i])
 	{

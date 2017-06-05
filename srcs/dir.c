@@ -6,7 +6,7 @@
 /*   By: bdurst <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/06 16:13:15 by bdurst            #+#    #+#             */
-/*   Updated: 2017/06/03 18:22:11 by bdurst           ###   ########.fr       */
+/*   Updated: 2017/06/05 02:06:05 by bdurst           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,14 +60,16 @@ int		ftp_is_dir(char *dir)
 DIR		*ftp_opendir(char *dir_name, int c_sock)
 {
 	DIR				*dir;
+	char			*to_free;
 
 	if (!(dir = opendir(dir_name)))
 	{
+		to_free = ft_strjoin("ERROR: opendir failure -> ", dir_name);
 		if (c_sock == -1)
-			printf("ERROR: opendir failure -> %s\n", dir_name);
+			printf("%s\n", to_free);
 		else if (c_sock != -2)
-			ftp_send_package(ft_strjoin("ERROR: opendir failure -> ",
-			dir_name), c_sock, 2, -1);
+			ftp_send_package(to_free, c_sock, 2, -1);
+		free(to_free);
 		return (NULL);
 	}
 	return (dir);
@@ -75,15 +77,25 @@ DIR		*ftp_opendir(char *dir_name, int c_sock)
 
 char	*call_dir_function(char del, char *path, char *arg, char *msg)
 {
+	char	*to_free;
+
 	if (del)
 	{
 		if (ftp_rmdir(ftp_check_path(path, arg)) == -1)
-			msg = ft_strjoin(ft_strjoin(msg, arg + 1), " ");
+		{
+			to_free = ft_strjoin(msg, arg + 1);
+			msg = ft_strjoin(to_free, " ");
+			free(to_free);
+		}
 	}
 	else
 	{
 		if (ftp_mkdir(ftp_check_path(path, arg)) == -1)
-			msg = ft_strjoin(ft_strjoin(msg, arg + 1), " ");
+		{
+			to_free = ft_strjoin(msg, arg + 1);
+			msg = ft_strjoin(to_free, " ");
+			free(to_free);
+		}
 	}
 	return (msg);
 }

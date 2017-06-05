@@ -6,11 +6,21 @@
 /*   By: bdurst <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/09/07 22:39:27 by bdurst            #+#    #+#             */
-/*   Updated: 2017/06/04 01:25:03 by bdurst           ###   ########.fr       */
+/*   Updated: 2017/06/05 02:11:03 by bdurst           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ftp.h"
+
+char		*ftp_free_strtrim(char *str)
+{
+	char	*to_free;
+
+	to_free = str;
+	str = ft_strtrim(str);
+	free(to_free);
+	return (str);
+}
 
 int			nmatch(char *s1, char *s2)
 {
@@ -32,7 +42,7 @@ char		*ftp_get_stdin(int sock)
 
 	ft_putstr("\033[0;34mftp\033[0m \033[0;32m->\033[0m ");
 	if ((ret = gnl(0, &line) > 0))
-		return (ft_strtrim(line));
+		return (ftp_free_strtrim(line));
 	else if (ret == -1)
 		ftp_error(NULL, "ERROR: gnl failure\n", sock);
 	return (NULL);
@@ -40,11 +50,14 @@ char		*ftp_get_stdin(int sock)
 
 static void	ftp_open_file(char *file, int sock, char flag)
 {
+	char	*to_free;
+
+	to_free = ft_strjoin("ERROR: open failure -> ", file);
 	if (flag & F_CLIENT)
-		printf("ERROR: open failure -> %s\n", file);
+		printf("%s\n", to_free);
 	else
-		ftp_send_package(ft_strjoin("ERROR: open failure -> ", file),
-				sock, 2, -1);
+		ftp_send_package(to_free, sock, 2, -1);
+	free(to_free);
 }
 
 void		ftp_send_file(char *file, int sock, char flag)
@@ -52,7 +65,7 @@ void		ftp_send_file(char *file, int sock, char flag)
 	int		fd;
 	char	buff[PACKAGE_SIZE + 1];
 	ssize_t	ret;
-	long	len;
+	//long	len;
 
 	ft_putstr("file ==== ");
 	ft_putendl(file);
@@ -60,23 +73,24 @@ void		ftp_send_file(char *file, int sock, char flag)
 		ftp_open_file(file, sock, flag);
 	else
 	{
-		len = lseek(fd, 0, SEEK_END);
-		lseek(fd, 0, SEEK_SET);
-		while ((ret = read(fd, buff, PACKAGE_SIZE)) > 0 || len > 0)
+//		len = lseek(fd, 0, SEEK_END);
+//		lseek(fd, 0, SEEK_SET);
+		while ((ret = read(fd, buff, PACKAGE_SIZE)) > 0)
 		{
-			ft_putnbr(len);
-			ft_putendl(" <--------------------------------------------------- len");
-			len -= PACKAGE_SIZE;
+			//ft_putnbr(len);
+			//ft_putendl(" <--------------------------------------------------- len");
+//			len -= PACKAGE_SIZE;
 			buff[ret] = '\0';
 			flag |= F_FILE_NO_END;
 			ft_putnbr(ret);
 			ft_putendl(" <-- ret send");
-			ft_putnbr(flag);
-			ft_putendl(" <-- flag");
+	//		ft_putnbr(flag);
+	//		ft_putendl(" <-- flag");
 			ftp_send_package(buff, sock, flag, ret);
 		}
+		if (ret == -1)
+			ft_putendl("READDDDDDDDDDDDDDDDDDDDDD fail!");
 		close(fd);
 		ftp_send_package("", sock, 2, 0);
-		ft_putendl("FIRST");
 	}
 }

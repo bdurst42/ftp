@@ -6,7 +6,7 @@
 /*   By: bdurst <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/06 19:00:00 by bdurst            #+#    #+#             */
-/*   Updated: 2017/06/04 01:02:17 by bdurst           ###   ########.fr       */
+/*   Updated: 2017/06/05 02:17:14 by bdurst           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@
 # define PATH (char*)list->data
 # define ARG PATH + ft_strlen(getcwd(NULL, 0)) + 1
 # define FILE_BUFFER "tmp"
-# define PACKAGE_SIZE 64000
+# define PACKAGE_SIZE 640000
 
 typedef struct	s_tools
 {
@@ -45,7 +45,7 @@ typedef struct	s_tools
 
 typedef struct	s_header
 {
-	long		nb_bytes;
+	size_t		nb_bytes;
 	char		flag;
 }				t_header;
 
@@ -95,5 +95,7 @@ char			*call_dir_function(char del, char *path, char *arg, char *msg);
 void			ftp_manage_get_cmd(t_list *list, int sock, char client);
 void			ftp_manage_send_cmd(char *cmd, t_list *list,
 				t_tools t, char *real_path);
+int				ftp_free_strjoin(char *s1, char **s2, char c);
+char			*ftp_free_strtrim(char *str);
 
 #endif
