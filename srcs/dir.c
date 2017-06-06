@@ -6,7 +6,7 @@
 /*   By: bdurst <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/06 16:13:15 by bdurst            #+#    #+#             */
-/*   Updated: 2017/06/05 02:06:05 by bdurst           ###   ########.fr       */
+/*   Updated: 2017/06/06 01:37:44 by bdurst           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,17 +15,20 @@
 char	ftp_rmdir(char *dir_name)
 {
 	struct stat st;
+	char		*c_p;
+	int			ret;
 
-	if (!ft_strcmp(dir_name, getcwd(NULL, 0)))
-		return (-1);
-	if (stat(dir_name, &st) != -1)
+	c_p = getcwd(NULL, 0);
+	ret = 1;
+	if (ft_strcmp(dir_name, c_p) && stat(dir_name, &st) != -1)
 	{
 		if (rmdir(dir_name) == -1)
-			return (-1);
+			ret = -1;
 	}
 	else
-		return (-1);
-	return (1);
+		ret = -1;
+	free(c_p);
+	return (ret);
 }
 
 char	ftp_mkdir(char *dir_path)
@@ -43,6 +46,7 @@ char	ftp_mkdir(char *dir_path)
 		dir_name = ft_strsub(dir_path, 0, i);
 		if (((ret = stat(dir_name, &st)) != -1 && i == ft_strlen(dir_path)) || (ret == -1 && mkdir(dir_name, 0777) == -1))
 			return (-1);
+		free(dir_name);
 		++i;
 	}
 	return (1);

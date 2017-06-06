@@ -6,7 +6,7 @@
 /*   By: bdurst <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/06 16:22:24 by bdurst            #+#    #+#             */
-/*   Updated: 2017/06/04 21:22:18 by bdurst           ###   ########.fr       */
+/*   Updated: 2017/06/06 03:24:29 by bdurst           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,14 +29,14 @@ char	*ftp_get_package(int sock, t_header *header)
 	ft_putendl("PACKAGE");
 	if ((ret = recv(sock, header, sizeof(t_header), 0)) > 0)
 	{
-	ft_putnbr(ret);
+	/*ft_putnbr(ret);
 	ft_putstr(" || ");
 	ft_putnbr(header->nb_bytes);
 	ft_putstr(" || ");
 	ft_putnbr(header->flag);
 	ft_putendl("WTF");
 	ft_putnbr(sock);
-	ft_putendl(" === sock");
+	ft_putendl(" === sock");*/
 	printf("%p\n", header);
 		if (!(buff = (char*)malloc(sizeof(char) * (header->nb_bytes + 1))))
 			ftp_error(NULL, "ERROR: malloc failure\n", 0);
@@ -67,15 +67,15 @@ void	ftp_send_package(char *str, int sock, char flag, long size)
 	}
 	else
 		header.nb_bytes = size;
-	ft_putnbr(header.nb_bytes);
+	/*ft_putnbr(header.nb_bytes);
 	ft_putendl(" _> nb bytes");
 	ft_putnbr(sizeof(t_header));
 	ft_putendl(" _> sizeof");
-	header.flag = flag;
-	ft_putnbr(header.flag);
+	*/header.flag = flag;
+	/*ft_putnbr(header.flag);
 	ft_putendl(" === flag");
 	ft_putnbr(sock);
-	ft_putendl(" === sock");
+	ft_putendl(" === sock");*/
 	if ((send(sock, &header, sizeof(t_header), 0)) == -1)
 		ftp_error(NULL, "ERROR: send failure\n", sock);
 	ft_putnbr(header.nb_bytes);

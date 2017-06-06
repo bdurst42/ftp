@@ -6,7 +6,7 @@
 /*   By: bdurst <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/06 16:24:10 by bdurst            #+#    #+#             */
-/*   Updated: 2017/03/16 02:18:05 by bdurst           ###   ########.fr       */
+/*   Updated: 2017/06/06 01:36:19 by bdurst           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,17 @@ static void	ftp_manage_sf(t_list **args, char *path, t_list **list,
 	}
 }
 
+void	ftp_clear_list(char *str)
+{
+	free(str);
+}
+
+void	ftp_clear_args(t_arg *arg)
+{
+	free(arg->str);
+	free(arg);
+}
+
 t_list		*ftp_get_args(t_list *args, char opt, char *path)
 {
 	t_list	*list;
@@ -64,10 +75,11 @@ t_list		*ftp_get_args(t_list *args, char opt, char *path)
 		else if (!opt || !last.is_opt || arg[0] != '-')
 			ftp_manage_sf(&args, path, &list, &last);
 		else
-			ft_node_push_back(&list, arg);
+			ft_node_push_back(&list, ft_strdup(arg));
 		args = args->next;
 	}
 	if (last.base_arg && last.list_size == ft_list_size(list))
 		ft_node_push_back(&list, last.base_arg);
+	ft_clear_list(&args, (void*)&ftp_clear_args);
 	return (list);
 }

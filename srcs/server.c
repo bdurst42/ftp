@@ -6,7 +6,7 @@
 /*   By: bdurst <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/17 12:36:17 by bdurst            #+#    #+#             */
-/*   Updated: 2016/12/17 12:37:07 by bdurst           ###   ########.fr       */
+/*   Updated: 2017/06/05 21:06:28 by bdurst           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,7 @@ static void	ftp_fork(int c_sock)
 		while (ftp_is_cmd(ftp_get_package(c_sock, &header), c_sock, path))
 			;
 	}
+	free(path);
 }
 
 static void	sigsegv_handle(int n)

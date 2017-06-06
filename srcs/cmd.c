@@ -6,7 +6,7 @@
 /*   By: bdurst <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/06 15:58:40 by bdurst            #+#    #+#             */
-/*   Updated: 2017/06/05 02:16:42 by bdurst           ###   ########.fr       */
+/*   Updated: 2017/06/05 23:41:55 by bdurst           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@ static void	ftp_cd(char *path, int c_sock)
 		ftp_send_package("ERROR: cd failure", c_sock, 0, -1);
 	else
 		ftp_send_package("SUCCES: cd", c_sock, 0, -1);
+	free(path);
 }
 
 static void	ftp_ls(char **args, int c_sock)
@@ -45,6 +46,7 @@ static void	ftp_ls(char **args, int c_sock)
 		ftp_send_package("ls", c_sock, 0, -1);
 		ftp_send_file(FILE_BUFFER, c_sock, 0);
 	}
+	ft_free_tab(args);
 }
 
 static void	ftp_manage_dir(char *cmd, int c_sock, char *path, char del)
@@ -61,25 +63,33 @@ static void	ftp_manage_dir(char *cmd, int c_sock, char *path, char del)
 	if (!msg)
 	{
 		if (del)
-			msg = "SUCCES: rmdir";
+			msg = ft_strdup("SUCCES: rmdir");
 		else
-			msg = "SUCCES: mkdir";
+			msg = ft_strdup("SUCCES: mkdir");
 	}
 	else
 	{
+		free(msg);
 		if (del)
 			ftp_free_strjoin("ERROR: Can't delete ", &msg, 1);
 		else
 			ftp_free_strjoin("ERROR: Can't create ", &msg, 1);
 	}
 	ft_free_tab(args);
+	free(msg);
 	ftp_send_package(msg, c_sock, 0, -1);
 }
 
 static char	ftp_other_cmds(char *cmd, int c_sock, char *path)
 {
+	char	*c_p;
+
 	if (!ft_strcmp(cmd, "pwd"))
-		ftp_send_package(getcwd(NULL, 0), c_sock, 0, -1);
+	{
+		c_p = getcwd(NULL, 0);
+		ftp_send_package(c_p, c_sock, 0, -1);
+		free(c_p);
+	}
 	else if (!ft_strcmp(cmd, "ls") || !ft_strncmp(cmd, "ls ", 3))
 		ftp_ls(ftp_list_to_tabstr(ftp_get_args(ftp_tabstr_to_list(
 		ft_strsplit(cmd, ' ')), 1, path)), c_sock);
@@ -110,6 +120,7 @@ char		ftp_is_cmd(char *cmd, int c_sock, char *path)
 		t.flag = 1;
 		ftp_send_package(cmd, c_sock, 0, -1);
 		ftp_manage_send_cmd(cmd, list->next, t, NULL);
+		ft_clear_list(&list, (void*)&ftp_clear_list);
 	}
 	else if (!ft_strncmp(cmd, "put ", 4) && (list = LIST(NULL)))
 	{
@@ -117,6 +128,7 @@ char		ftp_is_cmd(char *cmd, int c_sock, char *path)
 		ftp_manage_get_cmd(list->next, c_sock, 0);
 		ft_putendl("OUT");
 		ftp_send_package("", c_sock, 0, -1);
+		ft_clear_list(&list, (void*)&ftp_clear_list);
 	}
 	else
 		return (ftp_other_cmds(cmd, c_sock, path));

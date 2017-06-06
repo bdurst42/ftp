@@ -6,7 +6,7 @@
 /*   By: bdurst <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/17 16:59:21 by bdurst            #+#    #+#             */
-/*   Updated: 2017/06/05 02:14:47 by bdurst           ###   ########.fr       */
+/*   Updated: 2017/06/05 21:09:41 by bdurst           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,9 +29,9 @@ char		**ftp_list_to_tabstr(t_list *list)
 	while (tmp)
 	{
 		args[i++] = (char*)tmp->data;
-		free(tmp->data);
 		to_free = tmp;
 		tmp = tmp->next;
+		ft_putendl("ici");
 		free(to_free);
 	}
 	return (args);
@@ -107,11 +107,13 @@ char		*ftp_check_path(char *o_p, char *p)
 	int		j;
 	char	*c_p;
 
+	c_p = getcwd(NULL, 0);
 	if (ft_strncmp(p, o_p, ft_strlen(o_p)) && p[0] != '/'
 		&& ftp_free_strjoin("/", &p, 1))
-		ftp_free_strjoin(getcwd(NULL, 0), &p, 1);
+		ftp_free_strjoin(c_p, &p, 1);
 	else if (ft_strncmp(p, o_p, ft_strlen(o_p)))
-		ftp_free_strjoin(getcwd(NULL, 0), &p, 1);
+		ftp_free_strjoin(c_p, &p, 1);
+	free(c_p);
 	c_p = p;
 	p = ft_strsub(p, ft_strlen(o_p), ft_strlen(p) - ft_strlen(o_p));
 	free(c_p);

@@ -24,7 +24,8 @@ FILES = package.c \
 		cmd.c \
 		dir.c \
 		args.c \
-		wildcard.c
+		wildcard.c \
+		tools.c
 
 OBJS1 = $(patsubst %.c, $(DIR_OBJ)%.o, $(FILES)) $(patsubst %.c, $(DIR_OBJ)%.o, $(MAIN1))
 

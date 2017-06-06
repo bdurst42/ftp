@@ -6,7 +6,7 @@
 /*   By: bdurst <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/06 18:10:31 by bdurst            #+#    #+#             */
-/*   Updated: 2017/06/05 02:19:55 by bdurst           ###   ########.fr       */
+/*   Updated: 2017/06/06 01:37:22 by bdurst           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,7 @@ t_list			*ftp_get_sf_in_dir(char *dir_name, int sock)
 	{
 		while ((ent = readdir(dir)) != NULL)
 			if (ent->d_name[0] != '.')
-				ft_node_push_back(&file, ft_strjoin(ft_strjoin(dir_name, "/"),
-				ent->d_name));
+				ft_node_push_back(&file, ft_strjj(dir_name, "/", ent->d_name));
 		closedir(dir);
 	}
 	else
@@ -68,6 +67,7 @@ void			ftp_manage_get_cmd(t_list *list, int sock, char client)
 {
 	char		*cmd;
 	t_header	header;
+	char		*to_free;
 
 	header.flag |= F_CONTINUE;
 	while (list && header.flag & F_CONTINUE)
@@ -78,11 +78,12 @@ void			ftp_manage_get_cmd(t_list *list, int sock, char client)
 			{
 				if (ftp_mkdir(cmd + 6) == -1)
 				{
+					to_free = ft_strjoin("ERROR: Can't create ", cmd + 6);
 					if (client)
-						ft_putendl(ft_strjoin("ERROR: Can't create ", cmd + 6));
+						ft_putendl(to_free);
 					else
-						ftp_send_package(ft_strjoin("ERROR: Can't create ",
-									cmd + 6), sock, 2, -1);
+						ftp_send_package(to_free, sock, 2, -1);
+					free(to_free);
 				}
 			}
 			else if (!ft_strncmp(cmd, "mkfile ", 7))
@@ -90,5 +91,6 @@ void			ftp_manage_get_cmd(t_list *list, int sock, char client)
 			else
 				ft_putendl(cmd);
 		}
+		free(cmd);
 	}
 }

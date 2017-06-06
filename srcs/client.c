@@ -6,7 +6,7 @@
 /*   By: bdurst <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/06 15:57:22 by bdurst            #+#    #+#             */
-/*   Updated: 2017/03/20 13:23:22 by bdurst           ###   ########.fr       */
+/*   Updated: 2017/06/06 03:30:03 by bdurst           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,16 +26,16 @@ static int	ftp_create_client(char *addr, char *port)
 	info.ai_protocol = IPPROTO_TCP;
 	if (getaddrinfo(addr, port, &info, &res))
 	{
-		free(res);
+		freeaddrinfo(res);
 		ftp_error(NULL, "ERROR: getaddrinfo failure !\n", 0);
 	}
 	sock = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
 	if ((connect(sock, res->ai_addr, res->ai_addrlen)) == -1)
 	{
-		free(res);
+		freeaddrinfo(res);
 		ftp_error(NULL, "ERROR: connect failure !\n", 0);
 	}
-	free(res);
+	freeaddrinfo(res);
 	return (sock);
 }
 
@@ -54,6 +54,7 @@ static void	ftp_parse_cmd(char *cmd, int sock)
 			ftp_send_package(cmd, sock, 0, -1);
 			ftp_manage_send_cmd(cmd, list->next, t, NULL);
 		}
+		ft_clear_list(&list, (void*)&ftp_clear_list);
 	}
 	else
 		ftp_send_package(cmd, sock, 0, -1);
@@ -66,6 +67,7 @@ static char	ftp_ret_cmd(char *cmd, int sock)
 	if (!ft_strcmp(cmd, "quit"))
 	{
 		close(sock);
+		free(cmd);
 		return (0);
 	}
 	else if (!ft_strcmp(cmd, "ls"))
@@ -78,6 +80,7 @@ static char	ftp_ret_cmd(char *cmd, int sock)
 	}
 	else
 		ft_putendl(cmd);
+	free(cmd);
 	return (1);
 }
 
@@ -106,8 +109,15 @@ int			main(int ac, char *av[])
 			if (!(ftp_ret_cmd(cmd, g_sock)))
 				return (0);
 		while (!(cmd = ftp_get_stdin(g_sock)) || !cmd[0])
-			;
+		{
+			ft_putendl("get lien fail");
+			if (cmd)
+				free(cmd);
+		}
+		printf("%p | %s\n", cmd, cmd);
 		ftp_parse_cmd(cmd, g_sock);
+		printf("%p | %s\n", cmd, cmd);
+		free(cmd);
 	}
 	close(g_sock);
 	return (0);
