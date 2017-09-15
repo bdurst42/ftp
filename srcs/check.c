@@ -31,7 +31,6 @@ char		**ftp_list_to_tabstr(t_list *list)
 		args[i++] = (char*)tmp->data;
 		to_free = tmp;
 		tmp = tmp->next;
-		ft_putendl("ici");
 		free(to_free);
 	}
 	return (args);
@@ -59,21 +58,7 @@ t_list		*ftp_tabstr_to_list(char **args)
 	return (list);
 }
 
-int			ftp_free_strjoin(char *s1, char **s2, char c)
-{
-	char	*tmp;
-
-	tmp = *s2;
-	if (c)
-		*s2 = ft_strjoin(s1, *s2);
-	else
-		*s2 = ft_strjoin(*s2, s1);
-	if (tmp)
-		free(tmp);
-	return (1);
-}
-
-static int	ftp_if_dot(char **current_path, char *path, int i)
+static int	ftp_if_dot(char **c_p, char *path, int i)
 {
 	int		pos;
 	int		j;
@@ -84,29 +69,27 @@ static int	ftp_if_dot(char **current_path, char *path, int i)
 	{
 		if (j++ != i)
 		{
-			if (*current_path && (pos = ftp_find_last_directory(*current_path)))
+			if (*c_p && (pos = ftp_find_last_directory(*c_p)))
 			{
-				to_free = *current_path;
-				*current_path = ft_strsub(*current_path, 0,
-				ft_strlen(*current_path) - pos);
+				to_free = *c_p;
+				*c_p = ft_strsub(*c_p, 0,
+				ft_strlen(*c_p) - pos);
 				free(to_free);
 			}
 			else
 			{
-				free(*current_path);
-				*current_path = NULL;
+				free(*c_p);
+				*c_p = NULL;
 			}
 		}
 	}
 	return (j);
 }
 
-char		*ftp_check_path(char *o_p, char *p)
+static char	*ftp_polish_path(char *o_p, char *p)
 {
-	int		i;
-	int		j;
 	char	*c_p;
-
+	
 	c_p = getcwd(NULL, 0);
 	if (ft_strncmp(p, o_p, ft_strlen(o_p)) && p[0] != '/'
 		&& ftp_free_strjoin("/", &p, 1))
@@ -117,7 +100,17 @@ char		*ftp_check_path(char *o_p, char *p)
 	c_p = p;
 	p = ft_strsub(p, ft_strlen(o_p), ft_strlen(p) - ft_strlen(o_p));
 	free(c_p);
+	return (p);
+}
+
+char		*ftp_check_path(char *o_p, char *p)
+{
+	int		i;
+	int		j;
+	char	*c_p;
+	
 	c_p = NULL;
+	p = ftp_polish_path(o_p, p);
 	i = -1;
 	while (p[++i])
 	{
@@ -130,6 +123,7 @@ char		*ftp_check_path(char *o_p, char *p)
 			j = ftp_if_dot(&c_p, p, i);
 		i = j;
 	}
+	free(p);
 	ftp_free_strjoin(o_p, &c_p, 1);
 	return (c_p);
 }

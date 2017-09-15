@@ -51,8 +51,9 @@ static void	ftp_parse_cmd(char *cmd, int sock)
 		{
 			t.sock = sock;
 			t.flag = 1 + F_CLIENT;
+			t.cmd = cmd;
 			ftp_send_package(cmd, sock, 0, -1);
-			ftp_manage_send_cmd(cmd, list->next, t, NULL);
+			ftp_manage_send_cmd(list->next, t, NULL);
 		}
 		ft_clear_list(&list, (void*)&ftp_clear_list);
 	}
@@ -80,7 +81,8 @@ static char	ftp_ret_cmd(char *cmd, int sock)
 	}
 	else
 		ft_putendl(cmd);
-	free(cmd);
+	if (cmd)
+		free(cmd);
 	return (1);
 }
 
@@ -109,14 +111,9 @@ int			main(int ac, char *av[])
 			if (!(ftp_ret_cmd(cmd, g_sock)))
 				return (0);
 		while (!(cmd = ftp_get_stdin(g_sock)) || !cmd[0])
-		{
-			ft_putendl("get lien fail");
 			if (cmd)
 				free(cmd);
-		}
-		printf("%p | %s\n", cmd, cmd);
 		ftp_parse_cmd(cmd, g_sock);
-		printf("%p | %s\n", cmd, cmd);
 		free(cmd);
 	}
 	close(g_sock);

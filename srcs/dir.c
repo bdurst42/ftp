@@ -44,7 +44,8 @@ char	ftp_mkdir(char *dir_path)
 		while (dir_path[i] && dir_path[i] != '/')
 			++i;
 		dir_name = ft_strsub(dir_path, 0, i);
-		if (((ret = stat(dir_name, &st)) != -1 && i == ft_strlen(dir_path)) || (ret == -1 && mkdir(dir_name, 0777) == -1))
+		if (((ret = stat(dir_name, &st)) != -1 && i == ft_strlen(dir_path)) \
+		|| (ret == -1 && mkdir(dir_name, 0777) == -1))
 			return (-1);
 		free(dir_name);
 		++i;

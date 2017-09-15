@@ -25,7 +25,8 @@ FILES = package.c \
 		dir.c \
 		args.c \
 		wildcard.c \
-		tools.c
+		tools.c \
+		manage_stars.c
 
 OBJS1 = $(patsubst %.c, $(DIR_OBJ)%.o, $(FILES)) $(patsubst %.c, $(DIR_OBJ)%.o, $(MAIN1))
 
@@ -43,14 +44,14 @@ all: serveur client
 
 serveur: mkdirobj $(DEP_OBJ1)
 		@ make -C $(DIR_LIB)
-		@ /bin/echo -n "Archiving object in $(NAME1):"
-		@ $(CC) -o $@ $(OBJS1) $(MFLAGS) -L $(DIR_LIB) -lft
+		@ /bin/echo -n "Archiving object in $(DIR_OBJ):"
+		@ $(CC) -o $@ $(OBJS1) $(MFLAGS) -L $(DIR_LIB) -l ft -g
 		@ echo " \033[32mAll done!\033[0m"
 
 client: mkdirobj $(DEP_OBJ2)
 		@ make -C $(DIR_LIB)
-		@ /bin/echo -n "Archiving object in $(NAME2):"
-		@ $(CC) -o $@ $(OBJS2) $(MFLAGS) -L $(DIR_LIB) -lft
+		@ /bin/echo -n "Archiving object in $(DIR_OBJ):"
+		@ $(CC) -o $@ $(OBJS2) $(MFLAGS) -L $(DIR_LIB) -l ft -g
 		@ echo " \033[32mAll done!\033[0m"
 
 $(DIR_OBJ)%.o: $(SRC_DIR)%.c

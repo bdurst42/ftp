@@ -42,6 +42,7 @@ static void	ftp_fork(int c_sock)
 	pid_t		pid;
 	t_header	header;
 	char		*path;
+	char		*cmd;
 
 	path = getcwd(NULL, 0);
 	if ((pid = fork()) == -1)
@@ -49,8 +50,13 @@ static void	ftp_fork(int c_sock)
 	else if (pid != 0)
 	{
 		ftp_send_package("SUCCES: connection", c_sock, 0, -1);
-		while (ftp_is_cmd(ftp_get_package(c_sock, &header), c_sock, path))
-			;
+		cmd = ftp_get_package(c_sock, &header);
+		while (cmd && ftp_is_cmd(cmd, c_sock, path))
+		{
+			free(cmd);
+			cmd = ftp_get_package(c_sock, &header);
+		}
+		free(cmd);
 	}
 	free(path);
 }

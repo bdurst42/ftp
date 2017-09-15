@@ -35,12 +35,13 @@
 # define PATH (char*)list->data
 # define ARG PATH + ft_strlen(c_p) + 1
 # define FILE_BUFFER "tmp"
-# define PACKAGE_SIZE 640000
+# define PACKAGE_SIZE 64000
 
 typedef struct	s_tools
 {
 	int			sock;
 	char		flag;
+	char		*cmd;
 }				t_tools;
 
 typedef struct	s_header
@@ -93,12 +94,13 @@ char			ftp_rmdir(char *dir_name);
 char			*call_dir_function(char del, char *path, char *arg, char *msg);
 
 void			ftp_manage_get_cmd(t_list *list, int sock, char client);
-void			ftp_manage_send_cmd(char *cmd, t_list *list,
-				t_tools t, char *real_path);
+void			ftp_manage_send_cmd(t_list *list, t_tools t, char *real_path);
 
 int				ftp_free_strjoin(char *s1, char **s2, char c);
 char			*ftp_free_strtrim(char *str);
 char			*ft_strjj(char *s1, char *s2, char *s3);
 void			ftp_clear_list(char *str);
+
+void	    	ftp_manage_stars(char *path, t_list **list, char *end_path);
 
 #endif

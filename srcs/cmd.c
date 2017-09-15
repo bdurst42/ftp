@@ -49,7 +49,7 @@ static void	ftp_ls(char **args, int c_sock)
 	ft_free_tab(args);
 }
 
-static void	ftp_manage_dir(char *cmd, int c_sock, char *path, char del)
+static void	ftp_manage_cmd_dir(char *cmd, int c_sock, char *path, char del)
 {
 	int		i;
 	char	**args;
@@ -69,11 +69,8 @@ static void	ftp_manage_dir(char *cmd, int c_sock, char *path, char del)
 	}
 	else
 	{
-		free(msg);
-		if (del)
-			ftp_free_strjoin("ERROR: Can't delete ", &msg, 1);
-		else
-			ftp_free_strjoin("ERROR: Can't create ", &msg, 1);
+		(del) ? ftp_free_strjoin("ERROR: Can't delete ", &msg, 1) : \
+		 ftp_free_strjoin("ERROR: Can't create ", &msg, 1);
 	}
 	ft_free_tab(args);
 	free(msg);
@@ -90,13 +87,15 @@ static char	ftp_other_cmds(char *cmd, int c_sock, char *path)
 		ftp_send_package(c_p, c_sock, 0, -1);
 		free(c_p);
 	}
+	else if (!ft_strncmp(cmd, "cd ", 3))
+		ftp_cd(ftp_check_path(path, ft_strtrim(cmd + 3)), c_sock);
 	else if (!ft_strcmp(cmd, "ls") || !ft_strncmp(cmd, "ls ", 3))
 		ftp_ls(ftp_list_to_tabstr(ftp_get_args(ftp_tabstr_to_list(
 		ft_strsplit(cmd, ' ')), 1, path)), c_sock);
 	else if (!ft_strncmp(cmd, "mkdir ", 6))
-		ftp_manage_dir(cmd, c_sock, path, 0);
+		ftp_manage_cmd_dir(cmd, c_sock, path, 0);
 	else if (!ft_strncmp(cmd, "rmdir ", 6))
-		ftp_manage_dir(cmd, c_sock, path, 1);
+		ftp_manage_cmd_dir(cmd, c_sock, path, 1);
 	else
 		ftp_send_package("Unknow command !", c_sock, 0, -1);
 	return (1);
@@ -112,21 +111,17 @@ char		ftp_is_cmd(char *cmd, int c_sock, char *path)
 		ftp_send_package("quit", c_sock, 0, -1);
 		return (close(c_sock));
 	}
-	else if (!ft_strncmp(cmd, "cd ", 3))
-		ftp_cd(ftp_check_path(path, ftp_free_strtrim(cmd + 3)), c_sock);
 	else if (!ft_strncmp(cmd, "get ", 4) && (list = LIST(path)))
 	{
 		t.sock = c_sock;
 		t.flag = 1;
-		ftp_send_package(cmd, c_sock, 0, -1);
-		ftp_manage_send_cmd(cmd, list->next, t, NULL);
+		t.cmd = cmd;
+		ftp_manage_send_cmd(list->next, t, NULL);
 		ft_clear_list(&list, (void*)&ftp_clear_list);
 	}
 	else if (!ft_strncmp(cmd, "put ", 4) && (list = LIST(NULL)))
 	{
-		ft_putendl("ENTERRRRRRRRRRRRRRR");
 		ftp_manage_get_cmd(list->next, c_sock, 0);
-		ft_putendl("OUT");
 		ftp_send_package("", c_sock, 0, -1);
 		ft_clear_list(&list, (void*)&ftp_clear_list);
 	}
