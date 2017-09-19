@@ -101,6 +101,6 @@ char			*ftp_free_strtrim(char *str);
 char			*ft_strjj(char *s1, char *s2, char *s3);
 void			ftp_clear_list(char *str);
 
-void	    	ftp_manage_stars(char *path, t_list **list, char *end_path);
+void			ftp_manage_stars(char *path, t_list **list, char *end_path);
 
 #endif

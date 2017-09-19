@@ -89,7 +89,7 @@ static int	ftp_if_dot(char **c_p, char *path, int i)
 static char	*ftp_polish_path(char *o_p, char *p)
 {
 	char	*c_p;
-	
+
 	c_p = getcwd(NULL, 0);
 	if (ft_strncmp(p, o_p, ft_strlen(o_p)) && p[0] != '/'
 		&& ftp_free_strjoin("/", &p, 1))
@@ -108,7 +108,7 @@ char		*ftp_check_path(char *o_p, char *p)
 	int		i;
 	int		j;
 	char	*c_p;
-	
+
 	c_p = NULL;
 	p = ftp_polish_path(o_p, p);
 	i = -1;

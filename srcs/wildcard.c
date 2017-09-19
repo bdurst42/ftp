@@ -49,18 +49,18 @@ static void	ftp_multiple_wildcards(t_list **args, t_list **list, char *path,
 	int		i;
 	int		pos;
 
-	i = -1;	
+	i = -1;
 	while (arg[++i])
-			if (arg[i] == '*')
-			{
-				pos = ftp_get_current_sf(arg, i);
-				dir_path = ftp_get_dir_path(path, arg, pos);
-				if (arg[pos] == '/')
-					ftp_manage_stars(dir_path, args, arg + pos);
-				else
-					ftp_manage_stars(dir_path, list, NULL);
-				break ;
-			}
+		if (arg[i] == '*')
+		{
+			pos = ftp_get_current_sf(arg, i);
+			dir_path = ftp_get_dir_path(path, arg, pos);
+			if (arg[pos] == '/')
+				ftp_manage_stars(dir_path, args, arg + pos);
+			else
+				ftp_manage_stars(dir_path, list, NULL);
+			break ;
+		}
 }
 
 void		ftp_wildcards(t_list **args, t_list **list, char *path)

@@ -37,7 +37,7 @@ static int		ftp_open_file(char *file, int sock, char client)
 {
 	char		*to_free;
 	int			fd;
-	
+
 	if ((fd = open(file, O_WRONLY | O_CREAT | O_TRUNC, 0777)) == -1)
 	{
 		to_free = ft_strjoin("ERROR: open failure -> ", file);
@@ -75,7 +75,7 @@ void			ftp_get_file(char *file, int sock, char client)
 static void		ftp_mkdir_fail(char *cmd, int sock, char client)
 {
 	char		*to_free;
-	
+
 	if (ftp_mkdir(cmd) == -1)
 	{
 		to_free = ft_strjoin("ERROR: Can't create ", cmd);

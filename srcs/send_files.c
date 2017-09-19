@@ -71,7 +71,7 @@ static void	ftp_manage_sf(t_list **list, t_tools t, char *real_path)
 	}
 }
 
-static char	*ftp_get_real_path(char	*path, int w_p)
+static char	*ftp_get_real_path(char *path, int w_p)
 {
 	if (!ftp_find_last_directory(path) && path[0] != '/')
 		w_p = 0;

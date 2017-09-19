@@ -70,7 +70,7 @@ static void	ftp_manage_cmd_dir(char *cmd, int c_sock, char *path, char del)
 	else
 	{
 		(del) ? ftp_free_strjoin("ERROR: Can't delete ", &msg, 1) : \
-		 ftp_free_strjoin("ERROR: Can't create ", &msg, 1);
+		ftp_free_strjoin("ERROR: Can't create ", &msg, 1);
 	}
 	ft_free_tab(args);
 	free(msg);

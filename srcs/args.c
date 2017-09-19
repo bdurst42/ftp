@@ -48,12 +48,12 @@ static void	ftp_manage_sf(t_list **args, char *path, t_list **list,
 	}
 }
 
-void	ftp_clear_list(char *str)
+void		ftp_clear_list(char *str)
 {
 	free(str);
 }
 
-void	ftp_clear_args(t_arg *arg)
+void		ftp_clear_args(t_arg *arg)
 {
 	free(arg->str);
 	free(arg);

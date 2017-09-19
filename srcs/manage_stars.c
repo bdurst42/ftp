@@ -1,9 +1,21 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   manage_stars.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: bdurst <marvin@42.fr>                      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2017/09/19 11:18:51 by bdurst            #+#    #+#             */
+/*   Updated: 2017/09/19 11:18:52 by bdurst           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "ftp.h"
 
 static void	ftp_fill_list(t_list **list, char *end_path, char *join)
 {
 	t_arg			*arg;
-	
+
 	if (end_path)
 	{
 		if (!(arg = (t_arg*)malloc(sizeof(t_arg))))
@@ -16,7 +28,7 @@ static void	ftp_fill_list(t_list **list, char *end_path, char *join)
 		ft_node_push_back(list, join);
 }
 
-void	    ftp_manage_stars(char *path, t_list **list, char *end_path)
+void		ftp_manage_stars(char *path, t_list **list, char *end_path)
 {
 	DIR				*dir;
 	struct dirent	*ent;

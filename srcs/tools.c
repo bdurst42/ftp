@@ -12,7 +12,7 @@
 
 #include "ftp.h"
 
-char	*ft_strjj(char *s1, char *s2, char *s3)
+char		*ft_strjj(char *s1, char *s2, char *s3)
 {
 	char	*to_free;
 	char	*rslt;

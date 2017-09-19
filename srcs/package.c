@@ -29,7 +29,7 @@ char	*ftp_get_package(int sock, t_header *header)
 	ret = 0;
 	while ((ret += recv(sock, header, sizeof(t_header) - ret, 0)) >= 0
 				&& (size_t)ret < sizeof(t_header))
-				;
+		;
 	if (ret != -1)
 	{
 		if (!(buff = (char*)malloc(header->nb_bytes + 1)))
@@ -55,7 +55,7 @@ void	ftp_send_package(char *str, int sock, char flag, long size)
 	ssize_t		ret;
 	char		*package;
 	int			size_header;
-	
+
 	if (size == -1)
 		header.nb_bytes = ft_strlen(str);
 	else
@@ -63,10 +63,10 @@ void	ftp_send_package(char *str, int sock, char flag, long size)
 	header.flag = flag;
 	size_header = sizeof(t_header);
 	if (!(package = malloc(size_header + header.nb_bytes)))
-			ftp_error(NULL, "ERROR: malloc failure !\n", sock);
+		ftp_error(NULL, "ERROR: malloc failure !\n", sock);
 	ft_memcpy(package, &header, size_header);
 	ft_memcpy(package + size_header, str, header.nb_bytes);
-	if ((ret = send(sock, package, size_header + header.nb_bytes, 0)) == -1)	
+	if ((ret = send(sock, package, size_header + header.nb_bytes, 0)) == -1)
 		ftp_error(NULL, "ERROR: send failure\n", sock);
 	free(package);
 }
